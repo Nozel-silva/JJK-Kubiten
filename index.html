@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draggable Image with Buttons</title>
+  <style>
+    body {
+      background-color: #1e1e1e; /* Dark background */
+      color: #ffffff; /* Light text color for contrast */
+      margin: 0;
+      overflow: hidden; /* Prevent scrolling */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    
+    #gojo {
+      width: 150px;
+      cursor: move;
+      position: absolute;
+      bottom: 80px;
+      left: calc(50% - 75px);
+    }
+    
+    .button-container {
+      position: absolute;
+      bottom: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
+    
+    .button-container button {
+      background-color: #800080;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .button-container button:hover {
+      background-color: #a020f0;
+    }
+
+    /* Orb styling */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      animation: moveStraight 3s linear infinite;
+    }
+
+    /* Orb animations */
+    @keyframes moveStraight {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100vh); } /* Moves upward off-screen */
+    }
+  </style>
+</head>
+<body>
+
+<img src="gojo.jpg" id="gojo" alt="Gojo Image">
+
+<div class="button-container">
+  <button id="shootButton">Shoot</button>
+  <button>D.E</button>
+  <button>RCT</button>
+  <button>RCE</button>
+</div>
+
+<script>
+  const img = document.getElementById("gojo");
+  const shootButton = document.getElementById("shootButton");
+  let isDragging = false;
+  let offsetX, offsetY;
+
+  // Dragging logic for the image
+  function startDrag(e) {
+    isDragging = true;
+    const clientX = e.clientX || e.touches[0].clientX;
+    const clientY = e.clientY || e.touches[0].clientY;
+    offsetX = clientX - img.offsetLeft;
+    offsetY = clientY - img.offsetTop;
+    e.preventDefault();
+  }
+
+  function duringDrag(e) {
+    if (isDragging) {
+      const clientX = e.clientX || e.touches[0].clientX;
+      const clientY = e.clientY || e.touches[0].clientY;
+      const x = Math.min(window.innerWidth - img.width, Math.max(0, clientX - offsetX));
+      const y = Math.min(window.innerHeight - img.height, Math.max(0, clientY - offsetY));
+      img.style.left = `${x}px`;
+      img.style.top = `${y}px`;
+    }
+  }
+
+  function stopDrag() {
+    isDragging = false;
+  }
+
+  img.addEventListener("mousedown", startDrag);
+  document.addEventListener("mousemove", duringDrag);
+  document.addEventListener("mouseup", stopDrag);
+  img.addEventListener("touchstart", startDrag);
+  document.addEventListener("touchmove", duringDrag);
+  document.addEventListener("touchend", stopDrag);
+
+  // Orb creation function
+  function createOrb(color, size) {
+    const orb = document.createElement("div");
+    orb.className = "orb";
+    orb.style.width = size + "px";
+    orb.style.height = size + "px";
+    orb.style.backgroundColor = color;
+
+    // Position orb to start from the center of the Gojo image
+    const imgRect = img.getBoundingClientRect();
+    orb.style.left = `${imgRect.left + imgRect.width / 2 - size / 2}px`;
+    orb.style.top = `${imgRect.top}px`;
+
+    document.body.appendChild(orb);
+
+    // Remove orb when animation is done
+    setTimeout(() => {
+      orb.remove();
+    }, 3000);
+  }
+
+  // Shoot button actions
+  let clickTimeout;
+  let longPressTimeout;
+
+  shootButton.addEventListener("click", () => {
+    clearTimeout(clickTimeout);
+    clickTimeout = setTimeout(() => {
+      createOrb("blue", 50); // Single click - blue orb
+    }, 200);
+  });
+
+  shootButton.addEventListener("dblclick", () => {
+    clearTimeout(clickTimeout);
+    createOrb("red", 50); // Double click - red orb
+  });
+
+  shootButton.addEventListener("mousedown", (event) => {
+    event.stopPropagation(); // Prevent interference with dragging
+    longPressTimeout = setTimeout(() => {
+      createOrb("purple", 100); // Long press - purple orb
+    }, 500); // 500ms to detect long press
+  });
+
+  shootButton.addEventListener("mouseup", () => {
+    clearTimeout(longPressTimeout);
+  });
+
+  shootButton.addEventListener("mouseleave", () => {
+    clearTimeout(longPressTimeout);
+  });
+</script>
+
+</body>
+</html>
