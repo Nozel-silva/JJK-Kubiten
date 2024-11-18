@@ -3,54 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Draggable Image with Buttons</title>
+  <title>Image Click Actions</title>
   <style>
     body {
       background-color: black; /* Dark background */
-      color: #ffffff; /* Light text color for contrast */
       margin: 0;
       overflow: hidden; /* Prevent scrolling */
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      flex-direction: column;
     }
     
     #gojo {
-      width: 50px;
-      Height:50:
-      cursor: move;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
       position: absolute;
       bottom: 80px;
-      left: calc(50% - 75px);
-
-
+      left: calc(50% - 50px);
     }
     
-    .button-container {
-      position: absolute;
-      bottom: 20px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      width: 100%;
-    }
-    
-    .button-container button {
-      background-color: #800080;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .button-container button:hover {
-      background-color: #a020f0;
-    }
-
     /* Orb styling */
     .orb {
       position: absolute;
@@ -69,20 +42,14 @@
 
 <img src="gojo.jpg" id="gojo" alt="Gojo Image">
 
-<div class="button-container">
-  <button id="shootButton">Shoot</button>
-  <button>D.E</button>
-  <button>RCT</button>
-  <button>RCE</button>
-</div>
-
 <script>
   const img = document.getElementById("gojo");
-  const shootButton = document.getElementById("shootButton");
+  let clickCount = 0;
+
+  // Dragging logic for the image (optional if draggable is required)
   let isDragging = false;
   let offsetX, offsetY;
 
-  // Dragging logic for the image
   function startDrag(e) {
     isDragging = true;
     const clientX = e.clientX || e.touches[0].clientX;
@@ -110,9 +77,6 @@
   img.addEventListener("mousedown", startDrag);
   document.addEventListener("mousemove", duringDrag);
   document.addEventListener("mouseup", stopDrag);
-  img.addEventListener("touchstart", startDrag);
-  document.addEventListener("touchmove", duringDrag);
-  document.addEventListener("touchend", stopDrag);
 
   // Orb creation function
   function createOrb(color, size) {
@@ -135,35 +99,57 @@
     }, 3000);
   }
 
-  // Shoot button actions
-  let clickTimeout;
-  let longPressTimeout;
 
-  shootButton.addEventListener("click", () => {
-    clearTimeout(clickTimeout);
-    clickTimeout = setTimeout(() => {
-      createOrb("blue", 50); // Single click - blue orb
-    }, 200);
-  });
 
-  shootButton.addEventListener("dblclick", () => {
-    clearTimeout(clickTimeout);
-    createOrb("red", 50); // Double click - red orb
-  });
+// Dragging logic for both mouse and touch
+  function startDrag(e) {
+    isDragging = true;
+    const touch = e.touches ? e.touches[0] : e;
+    offsetX = touch.clientX - img.offsetLeft;
+    offsetY = touch.clientY - img.offsetTop;
+    e.preventDefault();
+  }
 
-  shootButton.addEventListener("mousedown", (event) => {
-    event.stopPropagation(); // Prevent interference with dragging
-    longPressTimeout = setTimeout(() => {
-      createOrb("purple", 100); // Long press - purple orb
-    }, 500); // 500ms to detect long press
-  });
+  function duringDrag(e) {
+    if (isDragging) {
+      const touch = e.touches ? e.touches[0] : e;
+      const x = Math.min(window.innerWidth - img.width, Math.max(0, touch.clientX - offsetX));
+      const y = Math.min(window.innerHeight - img.height, Math.max(0, touch.clientY - offsetY));
+      img.style.left = `${x}px`;
+      img.style.top = `${y}px`;
+    }
+  }
 
-  shootButton.addEventListener("mouseup", () => {
-    clearTimeout(longPressTimeout);
-  });
+  function stopDrag() {
+    isDragging = false;
+  }
 
-  shootButton.addEventListener("mouseleave", () => {
-    clearTimeout(longPressTimeout);
+  img.addEventListener("mousedown", startDrag);
+  document.addEventListener("mousemove", duringDrag);
+  document.addEventListener("mouseup", stopDrag);
+
+  img.addEventListener("touchstart", startDrag);
+  document.addEventListener("touchmove", duringDrag);
+  document.addEventListener("touchend", stopDrag);
+
+
+
+
+
+
+  // Click event handling
+  img.addEventListener("click", () => {
+    clickCount++;
+    setTimeout(() => {
+      if (clickCount === 1) {
+        createOrb("red", 50); // Single click - red orb
+      } else if (clickCount === 2) {
+        createOrb("blue", 50); // Double click - blue orb
+      } else if (clickCount === 3) {
+        createOrb("purple", 350); // Triple click - purple orb
+      }
+      clickCount = 0; // Reset click count after action
+    }, 300); // Small delay to differentiate multiple clicks
   });
 </script>
 
