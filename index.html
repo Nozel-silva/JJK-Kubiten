@@ -1,157 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Click Actions</title>
-  <style>
-    body {
-      background-color: black; /* Dark background */
-      margin: 0;
-      overflow: hidden; /* Prevent scrolling */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    
-    #gojo {
-      width: 100px;
-      height: 100px;
-      cursor: pointer;
-      position: absolute;
-      bottom: 80px;
-      left: calc(50% - 50px);
-    }
-    
-    /* Orb styling */
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      animation: moveStraight 3s linear infinite;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Slashes & Falling Cubes</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: black;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+        }
 
-    /* Orb animations */
-    @keyframes moveStraight {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-100vh); } /* Moves upward off-screen */
-    }
-  </style>
+        .slash, .special-slash {
+            position: absolute;
+            width: 3px;
+            height: 80px;
+            background: red;
+            transform: rotate(45deg);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
+            filter: brightness(100%);
+            border-radius: 50% 50% 50% 50%;
+        }
+
+        .special-slash {
+            width: 6px;
+            height: 60vh;
+            background: white;
+        }
+
+        .cube, .big-cube {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: grey;
+            border-radius: 4px;
+        }
+
+        .big-cube {
+            width: 50px;
+            height: 50px;
+        }
+
+        .trigger-btn, .special-btn {
+            position: fixed;
+            bottom: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.7);
+        }
+
+        .trigger-btn:hover, .special-btn:hover {
+            background: darkred;
+        }
+
+        .trigger-btn { right: 10px; }
+        .special-btn { left: 10px; }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .popup button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            background: red;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .score-timer {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
+    <div class="score-timer">
+        Score: <span id="score">0</span> | Time: <span id="timer">180</span>s
+    </div>
 
-<img src="gojo.jpg" id="gojo" alt="Gojo Image">
+    <div class="popup" id="startPopup">
+        <h2>Subdue Mahoraga and score 100k points</h2>
+        <button onclick="startGame()">OK</button>
+    </div>
 
-<script>
-  const img = document.getElementById("gojo");
-  let clickCount = 0;
+    <button class="trigger-btn" onclick="startSlashing()" disabled>🙏</button>
+    <button class="special-btn" onclick="specialSlash()">Disect</button>
 
-  // Dragging logic for the image (optional if draggable is required)
-  let isDragging = false;
-  let offsetX, offsetY;
+    <audio id="disectSound" src="Slash.mp3"></audio>
 
-  function startDrag(e) {
-    isDragging = true;
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
-    offsetX = clientX - img.offsetLeft;
-    offsetY = clientY - img.offsetTop;
-    e.preventDefault();
-  }
+    <script>
+        let score = 0;
+        let timeLeft = 180;
+        let gameInterval, timerInterval;
+        let canClick = true;
 
-  function duringDrag(e) {
-    if (isDragging) {
-      const clientX = e.clientX || e.touches[0].clientX;
-      const clientY = e.clientY || e.touches[0].clientY;
-      const x = Math.min(window.innerWidth - img.width, Math.max(0, clientX - offsetX));
-      const y = Math.min(window.innerHeight - img.height, Math.max(0, clientY - offsetY));
-      img.style.left = `${x}px`;
-      img.style.top = `${y}px`;
-    }
-  }
+        function updateScore(points) {
+            score += points;
+            document.getElementById('score').textContent = score;
+            if (score >= 100000) {
+                clearInterval(gameInterval);
+                clearInterval(timerInterval);
+                alert("You win!");
+            }
+        }
 
-  function stopDrag() {
-    isDragging = false;
-  }
+        function updateTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(gameInterval);
+                    clearInterval(timerInterval);
+                    alert("You failed to subdue Mahoraga");
+                }
+            }, 1000);
+        }
 
-  img.addEventListener("mousedown", startDrag);
-  document.addEventListener("mousemove", duringDrag);
-  document.addEventListener("mouseup", stopDrag);
+        function startGame() {
+            document.getElementById('startPopup').style.display = 'none';
+            updateTimer();
+            gameInterval = setInterval(() => {
+                for (let i = 0; i < 7; i++) createCube();
+            }, 1000);
 
-  // Orb creation function
-  function createOrb(color, size) {
-    const orb = document.createElement("div");
-    orb.className = "orb";
-    orb.style.width = size + "px";
-    orb.style.height = size + "px";
-    orb.style.backgroundColor = color;
+            setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
+        }
 
-    // Position orb to start from the center of the Gojo image
-    const imgRect = img.getBoundingClientRect();
-    orb.style.left = `${imgRect.left + imgRect.width / 2 - size / 2}px`;
-    orb.style.top = `${imgRect.top}px`;
+        function createCube() {
+            const cube = document.createElement("div");
+            cube.classList.add("cube");
+            document.body.appendChild(cube);
 
-    document.body.appendChild(orb);
+            cube.style.left = `${Math.random() * window.innerWidth}px`;
+            cube.style.top = "-20px";
 
-    // Remove orb when animation is done
-    setTimeout(() => {
-      orb.remove();
-    }, 3000);
-  }
+            let fallSpeed = Math.random() * 5 + 4;
+            let fallInterval = setInterval(() => {
+                cube.style.top = `${cube.offsetTop + fallSpeed}px`;
+                if (cube.offsetTop > window.innerHeight) {
+                    updateScore(-1);
+                    clearInterval(fallInterval);
+                    cube.remove();
+                }
+                checkCollision(cube, fallInterval);
+            }, 20);
+        }
 
+        function createSlash(isTopHeavy) {
+            const slash = document.createElement("div");
+            slash.classList.add("slash");
+            document.body.appendChild(slash);
 
+            const x = Math.random() * window.innerWidth;
+            const y = isTopHeavy ? Math.random() * (window.innerHeight * 0.3) : Math.random() * window.innerHeight;
+            slash.style.left = `${x}px`;
+            slash.style.top = `${y}px`;
 
-// Dragging logic for both mouse and touch
-  function startDrag(e) {
-    isDragging = true;
-    const touch = e.touches ? e.touches[0] : e;
-    offsetX = touch.clientX - img.offsetLeft;
-    offsetY = touch.clientY - img.offsetTop;
-    e.preventDefault();
-  }
+            const rotation = Math.random() * 360;
+            slash.style.transform = `rotate(${rotation}deg)`;
 
-  function duringDrag(e) {
-    if (isDragging) {
-      const touch = e.touches ? e.touches[0] : e;
-      const x = Math.min(window.innerWidth - img.width, Math.max(0, touch.clientX - offsetX));
-      const y = Math.min(window.innerHeight - img.height, Math.max(0, touch.clientY - offsetY));
-      img.style.left = `${x}px`;
-      img.style.top = `${y}px`;
-    }
-  }
+            setTimeout(() => slash.style.opacity = 1, 100);
+            setTimeout(() => {
+                slash.style.opacity = 0;
+                setTimeout(() => slash.remove(), 500);
+            }, 700);
+        }
 
-  function stopDrag() {
-    isDragging = false;
-  }
+        function startSlashing() {
+            if (!canClick) return;
+            canClick = false;
+            const interval = setInterval(() => {
+                for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
+            }, 100);
 
-  img.addEventListener("mousedown", startDrag);
-  document.addEventListener("mousemove", duringDrag);
-  document.addEventListener("mouseup", stopDrag);
+            setTimeout(() => {
+                clearInterval(interval);
+                setTimeout(() => canClick = true, 20000);
+            }, 10000);
+        }
 
-  img.addEventListener("touchstart", startDrag);
-  document.addEventListener("touchmove", duringDrag);
-  document.addEventListener("touchend", stopDrag);
+        function specialSlash() {
+            const audio = document.getElementById("disectSound");
+            audio.play();
 
+            for (let i = 0; i < 3; i++) {
+                const slash = document.createElement("div");
+                slash.classList.add("special-slash");
+                document.body.appendChild(slash);
 
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                slash.style.left = `${x}px`;
+                slash.style.top = `${y}px`;
 
+                const rotation = Math.random() * 360;
+                slash.style.transform = `rotate(${rotation}deg)`;
 
+                setTimeout(() => slash.style.opacity = 1, 100);
+                setTimeout(() => {
+                    slash.style.opacity = 0;
+                    setTimeout(() => slash.remove(), 500);
+                }, 700);
+            }
+        }
 
+        function checkCollision(cube, interval) {
+            document.querySelectorAll(".slash, .special-slash").forEach(slash => {
+                const cubeRect = cube.getBoundingClientRect();
+                const slashRect = slash.getBoundingClientRect();
 
-  // Click event handling
-  img.addEventListener("click", () => {
-    clickCount++;
-    setTimeout(() => {
-      if (clickCount === 1) {
-        createOrb("red", 50); // Single click - red orb
-      } else if (clickCount === 2) {
-        createOrb("blue", 50); // Double click - blue orb
-      } else if (clickCount === 3) {
-        createOrb("purple", 350); // Triple click - purple orb
-      }
-      clickCount = 0; // Reset click count after action
-    }, 300); // Small delay to differentiate multiple clicks
-  });
-</script>
-
+                if (
+                    cubeRect.right > slashRect.left &&
+                    cubeRect.left < slashRect.right &&
+                    cubeRect.bottom > slashRect.top &&
+                    cubeRect.top < slashRect.bottom
+                ) {
+                    clearInterval(interval);
+                    cube.style.background = "white";
+                    cube.style.transition = "transform 0.3s, opacity 0.3s";
+                    cube.style.transform = "scale(1.5) rotate(720deg)";
+                    cube.style.opacity = "0";
+                    setTimeout(() => cube.remove(), 300);
+                    updateScore(2);
+                }
+            });
+        }
+    </script>
 </body>
 </html>
