@@ -124,7 +124,7 @@
         function updateScore(points) {
             score += points;
             document.getElementById('score').textContent = score;
-            if (score >= 100000) {
+            if (score >= 2000) {
                 clearInterval(gameInterval);
                 clearInterval(timerInterval);
                 alert("You win!");
@@ -151,6 +151,27 @@
             }, 1000);
 
             setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
+        }
+
+        function createCube() {
+            const cube = document.createElement("div");
+            cube.classList.add("cube");
+            document.body.appendChild(cube);
+
+            const startX = Math.random() * window.innerWidth;
+            cube.style.left = `${startX}px`;
+            cube.style.top = `-20px`;
+
+            const fallDuration = 3000 + Math.random() * 2000;
+            cube.style.transition = `top ${fallDuration}ms linear`;
+            requestAnimationFrame(() => {
+                cube.style.top = `${window.innerHeight}px`;
+            });
+
+            setTimeout(() => {
+                cube.remove();
+                updateScore(10); // Increase score when a cube falls off screen
+            }, fallDuration);
         }
 
         function specialSlash() {
@@ -190,7 +211,7 @@
             canClick = false;
 
             const audio = document.getElementById("slashSound");
-            audio.play();  // Play the slash sound
+            audio.play();
 
             const interval = setInterval(() => {
                 for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
@@ -200,6 +221,23 @@
                 clearInterval(interval);
                 setTimeout(() => canClick = true, 20000);
             }, 10000);
+        }
+
+        function createSlash(isRegular = true) {
+            const slash = document.createElement("div");
+            slash.classList.add(isRegular ? "slash" : "special-slash");
+            document.body.appendChild(slash);
+
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            slash.style.left = `${x}px`;
+            slash.style.top = `${y}px`;
+
+            setTimeout(() => slash.style.opacity = 1, 100);
+            setTimeout(() => {
+                slash.style.opacity = 0;
+                setTimeout(() => slash.remove(), 500);
+            }, 700);
         }
     </script>
 </body>
