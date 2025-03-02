@@ -110,10 +110,9 @@
     <button class="trigger-btn" onclick="startSlashing()" disabled>🙏</button>
     <button class="special-btn" onclick="specialSlash()">Disect</button>
 
-    <!-- Audio Tags -->
+    <!-- Audio files -->
     <audio id="disectSound" src="Slash.mp3"></audio>
-    <audio id="slashSound" src=" domain-expansion-sukuna.mp3"></audio>
-    <audio id="backgroundSound" src="Background.mp3" autoplay loop></audio>
+    <audio id="slashSound" src="Slash2.mp3"></audio>
 
     <script>
         let score = 0;
@@ -124,7 +123,7 @@
         function updateScore(points) {
             score += points;
             document.getElementById('score').textContent = score;
-            if (score >= 2000) {
+            if (score >= 100000) {
                 clearInterval(gameInterval);
                 clearInterval(timerInterval);
                 alert("You win!");
@@ -153,25 +152,21 @@
             setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
         }
 
-        function createCube() {
-            const cube = document.createElement("div");
-            cube.classList.add("cube");
-            document.body.appendChild(cube);
+        function startSlashing() {
+            if (!canClick) return;
+            canClick = false;
 
-            const startX = Math.random() * window.innerWidth;
-            cube.style.left = `${startX}px`;
-            cube.style.top = `-20px`;
+            const audio = document.getElementById("slashSound");
+            audio.play();
 
-            const fallDuration = 3000 + Math.random() * 2000;
-            cube.style.transition = `top ${fallDuration}ms linear`;
-            requestAnimationFrame(() => {
-                cube.style.top = `${window.innerHeight}px`;
-            });
+            const interval = setInterval(() => {
+                for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
+            }, 100);
 
             setTimeout(() => {
-                cube.remove();
-                updateScore(10); // Increase score when a cube falls off screen
-            }, fallDuration);
+                clearInterval(interval);
+                setTimeout(() => canClick = true, 20000);
+            }, 10000);
         }
 
         function specialSlash() {
@@ -204,40 +199,6 @@
             }
 
             setTimeout(() => specialBtn.disabled = false, 2000);
-        }
-
-        function startSlashing() {
-            if (!canClick) return;
-            canClick = false;
-
-            const audio = document.getElementById("slashSound");
-            audio.play();
-
-            const interval = setInterval(() => {
-                for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
-            }, 100);
-
-            setTimeout(() => {
-                clearInterval(interval);
-                setTimeout(() => canClick = true, 20000);
-            }, 10000);
-        }
-
-        function createSlash(isRegular = true) {
-            const slash = document.createElement("div");
-            slash.classList.add(isRegular ? "slash" : "special-slash");
-            document.body.appendChild(slash);
-
-            const x = Math.random() * window.innerWidth;
-            const y = Math.random() * window.innerHeight;
-            slash.style.left = `${x}px`;
-            slash.style.top = `${y}px`;
-
-            setTimeout(() => slash.style.opacity = 1, 100);
-            setTimeout(() => {
-                slash.style.opacity = 0;
-                setTimeout(() => slash.remove(), 500);
-            }, 700);
         }
     </script>
 </body>
