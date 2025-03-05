@@ -110,9 +110,9 @@
     <button class="trigger-btn" onclick="startSlashing()" disabled>🙏</button>
     <button class="special-btn" onclick="specialSlash()">Disect</button>
 
-    <!-- Audio files -->
     <audio id="disectSound" src="Slash.mp3"></audio>
-    <audio id="slashSound" src="Slash2.mp3"></audio>
+    <audio id="slashSound" src="domain-expansion-sukuna.mp3"></audio>
+
 
     <script>
         let score = 0;
@@ -152,13 +152,49 @@
             setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
         }
 
+        function createCube() {
+            const cube = document.createElement("div");
+            cube.classList.add("cube");
+            document.body.appendChild(cube);
+
+            cube.style.left = `${Math.random() * window.innerWidth}px`;
+            cube.style.top = "-20px";
+
+            let fallSpeed = Math.random() * 5 + 4;
+            let fallInterval = setInterval(() => {
+                cube.style.top = `${cube.offsetTop + fallSpeed}px`;
+                if (cube.offsetTop > window.innerHeight) {
+                    updateScore(-1);
+                    clearInterval(fallInterval);
+                    cube.remove();
+                }
+                checkCollision(cube, fallInterval);
+            }, 20);
+        }
+
+        function createSlash(isTopHeavy) {
+            const slash = document.createElement("div");
+            slash.classList.add("slash");
+            document.body.appendChild(slash);
+
+            const x = Math.random() * window.innerWidth;
+            const y = isTopHeavy ? Math.random() * (window.innerHeight * 0.3) : Math.random() * window.innerHeight;
+            slash.style.left = `${x}px`;
+            slash.style.top = `${y}px`;
+
+            const rotation = Math.random() * 360;
+            slash.style.transform = `rotate(${rotation}deg)`;
+
+            setTimeout(() => slash.style.opacity = 1, 100);
+            setTimeout(() => {
+                slash.style.opacity = 0;
+                setTimeout(() => slash.remove(), 500);
+            }, 700);
+        }
+
         function startSlashing() {
             if (!canClick) return;
             canClick = false;
-
-            const audio = document.getElementById("slashSound");
-            audio.play();
-
             const interval = setInterval(() => {
                 for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
             }, 100);
@@ -170,11 +206,6 @@
         }
 
         function specialSlash() {
-            const specialBtn = document.querySelector(".special-btn");
-            if (specialBtn.disabled) return;
-
-            specialBtn.disabled = true;
-
             const audio = document.getElementById("disectSound");
             audio.play();
 
@@ -197,9 +228,46 @@
                     setTimeout(() => slash.remove(), 500);
                 }, 700);
             }
-
-            setTimeout(() => specialBtn.disabled = false, 2000);
         }
+
+        function checkCollision(cube, interval) {
+            document.querySelectorAll(".slash, .special-slash").forEach(slash => {
+                const cubeRect = cube.getBoundingClientRect();
+                const slashRect = slash.getBoundingClientRect();
+
+                if (
+                    cubeRect.right > slashRect.left &&
+                    cubeRect.left < slashRect.right &&
+                    cubeRect.bottom > slashRect.top &&
+                    cubeRect.top < slashRect.bottom
+                ) {
+                    clearInterval(interval);
+                    cube.style.background = "white";
+                    cube.style.transition = "transform 0.3s, opacity 0.3s";
+                    cube.style.transform = "scale(1.5) rotate(720deg)";
+                    cube.style.opacity = "0";
+                    setTimeout(() => cube.remove(), 300);
+                    updateScore(2);
+                }
+            });
+        }
+        function startSlashing() {
+    if (!canClick) return;
+    canClick = false;
+
+    const audio = document.getElementById("slashSound");
+    audio.play();  // Play the new sound when the button is clicked
+
+    const interval = setInterval(() => {
+        for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
+    }, 100);
+
+    setTimeout(() => {
+        clearInterval(interval);
+        setTimeout(() => canClick = true, 20000);
+    }, 10000);
+}
+
     </script>
 </body>
 </html>
