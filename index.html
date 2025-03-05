@@ -103,7 +103,7 @@
     </div> 
 
     <div class="popup" id="startPopup">
-        <h2>Reach a destruction level of 5k points</h2>
+        <h2>Reach a destruction level of ?k points</h2>
         <button onclick="startGame()">OK</button>
     </div>
 
@@ -113,7 +113,7 @@
 <audio id="bgMusic" src="bg.mp3" loop></audio>
 
     <audio id="disectSound" src="Slash.mp3"></audio>
-    <audio id="slashSound" src="Slash2.mp3"></audio>
+    <audio id="slashSound" src="domain-expansion-sukuna.mp3 "></audio>
 
 
     <script>
@@ -125,7 +125,7 @@ let canClick = true;
 function updateScore(points) {
     score += points;
     document.getElementById('score').textContent = score;
-    if (score >= 100000) {
+    if (score >= 1000) {
         endGame("win");
     }
 }
@@ -161,7 +161,7 @@ function startGame() {
     document.getElementById('startPopup').style.display = 'none';
 
     const bgMusic = document.getElementById("bgMusic");
-    bgMusic.volume = 0.5;  // Set volume to 50%
+    bgMusic.volume = 0.2;  // Set volume to 50%
     bgMusic.play();  // Play background music when OK is clicked
 
     updateTimer();
