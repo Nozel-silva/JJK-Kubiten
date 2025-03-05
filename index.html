@@ -100,18 +100,20 @@
 <body>
     <div class="score-timer">
         Score: <span id="score">0</span> | Time: <span id="timer">180</span>s
-    </div>
+    </div> 
 
     <div class="popup" id="startPopup">
-        <h2>Subdue Mahoraga and score 100k points</h2>
+        <h2>Reach a destruction level of 5k points</h2>
         <button onclick="startGame()">OK</button>
     </div>
 
     <button class="trigger-btn" onclick="startSlashing()" disabled>🙏</button>
     <button class="special-btn" onclick="specialSlash()">Disect</button>
+    
+<audio id="bgMusic" src="bg.mp3" loop></audio>
 
     <audio id="disectSound" src="Slash.mp3"></audio>
-    <audio id="slashSound" src="domain-expansion-sukuna.mp3"></audio>
+    <audio id="slashSound" src="Slash2.mp3"></audio>
 
 
     <script>
@@ -143,14 +145,19 @@
         }
 
         function startGame() {
-            document.getElementById('startPopup').style.display = 'none';
-            updateTimer();
-            gameInterval = setInterval(() => {
-                for (let i = 0; i < 7; i++) createCube();
-            }, 1000);
+    document.getElementById('startPopup').style.display = 'none';
+    
+    const bgMusic = document.getElementById("bgMusic");
+    bgMusic.play();  // Play background music when OK is clicked
 
-            setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
-        }
+    updateTimer();
+    gameInterval = setInterval(() => {
+        for (let i = 0; i < 7; i++) createCube();
+    }, 1000);
+
+    setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
+}
+
 
         function createCube() {
             const cube = document.createElement("div");
