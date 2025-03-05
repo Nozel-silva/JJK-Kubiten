@@ -106,6 +106,17 @@
         <h2>Reach a destruction level of ?k points</h2>
         <button onclick="startGame()">OK</button>
     </div>
+<!-- Pop-up for winning -->
+<div class="popup" id="winPopup" style="display: none;">
+    <h2>You win!</h2>
+    <button onclick="location.reload()">Play Again</button>
+</div>
+
+<!-- Pop-up for losing -->
+<div class="popup" id="losePopup" style="display: none;">
+    <h2>You lose!</h2>
+    <button onclick="location.reload()">Try Again</button>
+</div>
 
     <button class="trigger-btn" onclick="startSlashing()" disabled>🙏</button>
     <button class="special-btn" onclick="specialSlash()">Disect</button>
