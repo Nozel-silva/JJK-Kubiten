@@ -113,7 +113,7 @@
 <audio id="bgMusic" src="bg.mp3" loop></audio>
 
     <audio id="disectSound" src="Slash.mp3"></audio>
-    <audio id="slashSound" src="Slash2.mp3"></audio>
+    <audio id="slashSound" src="domain-expansion-sukuna.mp3"></audio>
 
 
     <script>
@@ -148,6 +148,7 @@
     document.getElementById('startPopup').style.display = 'none';
     
     const bgMusic = document.getElementById("bgMusic");
+    bgMusic.volume = 0.2;  // Set volume to 30%
     bgMusic.play();  // Play background music when OK is clicked
 
     updateTimer();
