@@ -1,318 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Red Slashes & Falling Cubes</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: black;
-            width: 100vw;
-            height: 100vh;
-            position: fixed;
-        }
-        
-     #profile-pic {
-    width: 40px;        
-    height: 40px;       
-    border-radius: 50%; 
-    object-fit: cover;  
-    border: 2px solid white; 
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime Games by Nuel_sama</title>
+<style>
+    /* Dark Background and Basic Styles */
+    body {
+        background-color: #121212;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        overflow: hidden;  /* Prevent scroll during preloader */
+    }
 
-#info-container {
-    position: fixed;      
-    top: 10px;            
-    left: 10px;           
-    background-color: rgba(0, 0, 0, 0.5); 
-    padding: 5px 10px;    
-    border-radius: 8px;   
-    color: white;          
-    font-family: Arial, sans-serif;
-}
+    /* Preloader Styles */
+    #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #121212;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 1s ease-out, visibility 1s ease-out;
+    }
 
+    .preloader-text {
+        font-size: 3em;
+        color: #0f0;
+        animation: bounceIn 1.5s ease-out;
+    }
 
-        .slash, .special-slash {
-            position: absolute;
-            width: 3px;
-            height: 80px;
-            background: red;
-            transform: rotate(45deg);
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
-            filter: brightness(100%);
-            border-radius: 50% 50% 50% 50%;
-        }
+    /* Hide Preloader Animation */
+    .hide-preloader {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 1s ease-out, visibility 1s ease-out;
+    }
 
-        .special-slash {
-            width: 6px;
-            height: 60vh;
-            background: white;
-        }
+    /* Bounce In Animation for Preloader */
+    @keyframes bounceIn {
+        0% { transform: scale(0.5); opacity: 0; }
+        60% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); }
+    }
 
-        .cube, .big-cube {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: grey;
-            border-radius: 4px;
-        }
+    /* Main Content */
+    .content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        opacity: 0;  /* Hidden until preloader disappears */
+        animation: fadeIn 1s ease-out forwards;
+        animation-delay: 2s;  /* Delay to sync with preloader hide */
+    }
 
-        .big-cube {
-            width: 50px;
-            height: 50px;
-        }
+    /* Fade In Animation for Content */
+    @keyframes fadeIn {
+        to { opacity: 1; }
+    }
 
-        .trigger-btn, .special-btn {
-            position: fixed;
-            bottom: 10px;
-            background: red;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.7);
-        }
+    /* Header Styles */
+    .header {
+        font-size: 1.8em;
+        margin: 20px 0 10px;
+        transition: color 0.5s;
+    }
 
-        .trigger-btn:hover, .special-btn:hover {
-            background: darkred;
-        }
+    .inactive {
+        color: #555;  /* Dim for inactive headers */
+    }
 
-        .trigger-btn { right: 10px; }
-        .special-btn { left: 10px; }
+    /* Profile Picture Styles */
+    .profile-pic {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin: 0 auto 10px;
+        display: block;
+        border: 2px solid #0f0;
+    }
 
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
+    /* Animated Description Styles */
+    .description {
+        margin: 0 0 20px;
+        color: #bbb;
+        font-size: 1em;
+        display: inline-block;
+        animation: wordBounce 3s ease-in-out infinite;
+    }
 
-        .popup button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            background: red;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+    /* Up and Down Animation for Words */
+    @keyframes wordBounce {
+        0%, 100% { transform: translateY(0); }
+        25% { transform: translateY(-5px); }
+        75% { transform: translateY(5px); }
+    }
 
-        .score-timer {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            color: white;
-            font-size: 18px;
-        }
-    </style>
+    /* Anime List Styles */
+    .anime-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0 0 40px;
+    }
+
+    .anime-list li {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s;
+    }
+
+    .anime-list li img {
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+        margin-right: 10px;
+    }
+
+    .anime-list li a {
+        text-decoration: none;
+        color: #0f0;  /* Green for active links */
+    }
+
+    .anime-list li a:hover {
+        text-decoration: underline;
+    }
+
+    .anime-list li.active {
+        color: #0f0;
+    }
+
+    .anime-list li.inactive {
+        color: #555;  /* Dim for inactive items */
+        pointer-events: none;  /* Disable click */
+    }
+
+    .anime-list li:hover {
+        transform: scale(1.05);
+    }
+
+    /* Footer Styles */
+    footer {
+        margin-top: 20px;
+        padding: 10px 0;
+        background-color: #181818;
+        color: #888;
+    }
+
+    footer a {
+        color: #0f0;
+        text-decoration: none;
+        margin: 0 10px;
+    }
+
+    footer a:hover {
+        text-decoration: underline;
+    }
+</style>
 </head>
+
 <body>
-    
-<div id="info-container" style="display: flex; align-items: center; gap: 15px;">
-    <img id="profile-pic" src="suku.png" alt="Profile" />
-    <span>Score: <span id="score">0</span></span>
-    <span>Time Left: <span id="timer">180</span>s</span>
+
+<!-- Preloader Screen -->
+<div id="preloader">
+    <h1 class="preloader-text">Nuel_sama</h1>
 </div>
 
+<!-- Main Content -->
+<div class="content">
 
-     
+    <!-- Profile Picture -->
+    <img src="NS.jpg" alt="Nuel_sama" class="profile-pic">
 
-    <div class="popup" id="startPopup">
-        <h2>Reach a destruction level of ?k points</h2>
-        <button onclick="startGame()">OK</button>
-    </div>
-<!-- Pop-up for winning -->
-<div class="popup" id="winPopup" style="display: none;">
-    <h2>You win!</h2>
-    <button onclick="location.reload()">Play Again</button>
+    <!-- Personalized Introduction Text -->
+    <p class="description">Hey there! I'm just having fun creating 2D anime-inspired games in my spare time. Whether it's epic battles, dark curses, or legendary characters, I'm all about bringing anime vibes into gaming. Check out what I've got so far and keep an eye out for new releases!</p>
+
+    <!-- Header 1: Jujutsu Kaisen -->
+    <h2 class="header">Jujutsu Kaisen</h2>
+    <ul class="anime-list">
+        <li><a href="K.O.C.html" class="active">
+            <img src="suku.png" alt="King of Curses">
+            King of Curses
+        </a></li>
+        <li class="inactive">
+            <img src="gojo.jpg" alt="The Honoured One">
+            The Honoured One
+        </li>
+        <li class="inactive">
+            <img src="divine_sila_general.jpg" alt="DIVINE SILA GENERAL">
+            DIVINE SILA GENERAL
+        </li>
+    </ul>
+
+    <!-- Inactive Headers with Descriptions -->
+    <h2 class="header inactive">Demon Slayer</h2>
+    <p class="description">Prepare to slay demons and uncover dark secrets. Coming soon!</p>
+
+    <h2 class="header inactive">Chainsaw Man</h2>
+    <p class="description">Chainsaws and devils collide in this brutal adventure. Stay tuned!</p>
+
+    <h2 class="header inactive">Attack on Titan</h2>
+    <p class="description">Fight for humanity's survival against monstrous titans. Coming soon!</p>
+
 </div>
 
-<!-- Pop-up for losing -->
-<div class="popup" id="losePopup" style="display: none;">
-    <h2>You lose!</h2>
-    <button onclick="location.reload()">Try Again</button>
-</div>
+<!-- Footer with Contact Information -->
+<footer>
+    <p>Connect with me:</p>
+    <a href="https://twitter.com/Nuel_sama" target="_blank">X (Twitter)</a> |
+    <a href="https://github.com/Nuel-sama" target="_blank">GitHub</a> |
+    <a href="https://www.linkedin.com/in/Nuel-sama" target="_blank">LinkedIn</a>
+</footer>
 
-    <button class="trigger-btn" onclick="startSlashing()" disabled>🙏</button>
-    <button class="special-btn" onclick="specialSlash()">Disect</button>
-    
-<audio id="bgMusic" src="bg.mp3" loop></audio>
-
-    <audio id="disectSound" src="Slash.mp3"></audio>
-    <audio id="slashSound" src="domain-expansion-sukuna.mp3 "></audio>
-
-
-    <script>
-        let score = 0;
-let timeLeft = 180;
-let gameInterval, timerInterval;
-let canClick = true;
-
-function updateScore(points) {
-    score += points;
-    document.getElementById('score').textContent = score;
-    if (score >= 1000) {
-        endGame("win");
-    }
-}
-
-function updateTimer() {
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById('timer').textContent = timeLeft;
-        if (timeLeft <= 0) {
-            endGame("lose");
-        }
-    }, 1000);
-}
-
-function endGame(result) {
-    clearInterval(gameInterval);
-    clearInterval(timerInterval);
-
-    // Stop all audio
-    document.getElementById("bgMusic").pause();
-    document.getElementById("slashSound").pause();
-    document.getElementById("disectSound").pause();
-
-    // Show appropriate pop-up
-    if (result === "win") {
-        document.getElementById("winPopup").style.display = "block";
-    } else if (result === "lose") {
-        document.getElementById("losePopup").style.display = "block";
-    }
-}
-
-function startGame() {
-    document.getElementById('startPopup').style.display = 'none';
-
-    const bgMusic = document.getElementById("bgMusic");
-    bgMusic.volume = 0.2;  // Set volume to 50%
-    bgMusic.play();  // Play background music when OK is clicked
-
-    updateTimer();
-    gameInterval = setInterval(() => {
-        for (let i = 0; i < 7; i++) createCube();
-    }, 1000);
-
-    setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
-}
-
-function createCube() {
-    const cube = document.createElement("div");
-    cube.classList.add("cube");
-    document.body.appendChild(cube);
-
-    cube.style.left = `${Math.random() * window.innerWidth}px`;
-    cube.style.top = "-20px";
-
-    let fallSpeed = Math.random() * 5 + 4;
-    let fallInterval = setInterval(() => {
-        cube.style.top = `${cube.offsetTop + fallSpeed}px`;
-        if (cube.offsetTop > window.innerHeight) {
-            updateScore(-1);
-            clearInterval(fallInterval);
-            cube.remove();
-        }
-        checkCollision(cube, fallInterval);
-    }, 20);
-}
-
-function createSlash(isTopHeavy) {
-    const slash = document.createElement("div");
-    slash.classList.add("slash");
-    document.body.appendChild(slash);
-
-    const x = Math.random() * window.innerWidth;
-    const y = isTopHeavy ? Math.random() * (window.innerHeight * 0.3) : Math.random() * window.innerHeight;
-    slash.style.left = `${x}px`;
-    slash.style.top = `${y}px`;
-
-    const rotation = Math.random() * 360;
-    slash.style.transform = `rotate(${rotation}deg)`;
-
-    setTimeout(() => slash.style.opacity = 1, 100);
-    setTimeout(() => {
-        slash.style.opacity = 0;
-        setTimeout(() => slash.remove(), 500);
-    }, 700);
-}
-
-function startSlashing() {
-    if (!canClick) return;
-    canClick = false;
-
-    const audio = document.getElementById("slashSound");
-    audio.play();  // Play the new sound when the button is clicked
-
-    const interval = setInterval(() => {
-        for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
-    }, 100);
-
-    setTimeout(() => {
-        clearInterval(interval);
-        setTimeout(() => canClick = true, 20000);
-    }, 10000);
-}
-
-function specialSlash() {
-    const audio = document.getElementById("disectSound");
-    audio.play();
-
-    for (let i = 0; i < 3; i++) {
-        const slash = document.createElement("div");
-        slash.classList.add("special-slash");
-        document.body.appendChild(slash);
-
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * window.innerHeight;
-        slash.style.left = `${x}px`;
-        slash.style.top = `${y}px`;
-
-        const rotation = Math.random() * 360;
-        slash.style.transform = `rotate(${rotation}deg)`;
-
-        setTimeout(() => slash.style.opacity = 1, 100);
+<!-- JavaScript to Hide Preloader After 2 Seconds -->
+<script>
+    window.addEventListener('load', () => {
         setTimeout(() => {
-            slash.style.opacity = 0;
-            setTimeout(() => slash.remove(), 500);
-        }, 700);
-    }
-}
-
-function checkCollision(cube, interval) {
-    document.querySelectorAll(".slash, .special-slash").forEach(slash => {
-        const cubeRect = cube.getBoundingClientRect();
-        const slashRect = slash.getBoundingClientRect();
-
-        if (
-            cubeRect.right > slashRect.left &&
-            cubeRect.left < slashRect.right &&
-            cubeRect.bottom > slashRect.top &&
-            cubeRect.top < slashRect.bottom
-        ) {
-            clearInterval(interval);
-            cube.style.background = "white";
-            cube.style.transition = "transform 0.3s, opacity 0.3s";
-            cube.style.transform = "scale(1.5) rotate(720deg)";
-            cube.style.opacity = "0";
-            setTimeout(() => cube.remove(), 300);
-            updateScore(2);
-        }
+            const preloader = document.getElementById('preloader');
+            preloader.classList.add('hide-preloader');
+            document.body.style.overflow = 'auto';  // Restore scroll after preloader
+        }, 2000);  // 2000ms = 2 seconds delay
     });
-}
+</script>
 
-    </script>
 </body>
 </html>
