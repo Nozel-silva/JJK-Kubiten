@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -115,17 +115,58 @@
             color: white;
             font-size: 18px;
         }
+        
+        #video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 9999;  /* Keep video on top initially */
+}
+
+#video-container video {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+}
+
+#main-content {
+    position: relative;
+    z-index: 1;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;  /* Prevent scrolling during video */
+}
+
     </style>
 </head>
-<body>
+
     
-<div id="info-container" style="display: flex; align-items: center; gap: 15px;">
+    <body onload="playIntroVideo()">
+    <!-- Fullscreen Video Background -->
+    <div id="video-container">
+        <video id="intro-video" autoplay muted playsinline>
+            <source src="intro.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Main Content (Initially Hidden) -->
+    <div id="main-content" style="display: none;">
+        <div id="info-container" style="display: flex; align-items: center; gap: 15px;">
     <img id="profile-pic" src="suku.png" alt="Profile" />
     <span>Score: <span id="score">0</span></span>
     <span>Time Left: <span id="timer">180</span>s</span>
 </div>
+        <!-- Your other game contents go here -->
+    </div>
 
-
+ 
      
 
     <div class="popup" id="startPopup">
@@ -316,3 +357,4 @@ function checkCollision(cube, interval) {
     </script>
 </body>
 </html>
+ 
