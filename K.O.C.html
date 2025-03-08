@@ -353,6 +353,17 @@ function checkCollision(cube, interval) {
         }
     });
 }
+function playIntroVideo() {
+    const video = document.getElementById("intro-video");
+    const videoContainer = document.getElementById("video-container");
+    const mainContent = document.getElementById("main-content");
+
+    video.onended = () => {
+        videoContainer.style.display = "none";   // Hide video
+        document.body.style.overflow = "auto";   // Allow scrolling if needed
+        mainContent.style.display = "block";     // Show main content
+    };
+}
 
     </script>
 </body>
