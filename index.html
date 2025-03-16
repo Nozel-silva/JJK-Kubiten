@@ -69,7 +69,7 @@
 </style>
 </head>
 
-<body>
+<body onload="playAudio()">
 
 <!-- Preloader Screen -->
 <div id="preloader">
@@ -101,7 +101,7 @@
         </li>
         <li class="inactive">
             <img src="mg.jpg" alt="DIVINE SILA GENERAL">
-            DIVIERGENT SILA GENERAL
+            DIVERGENT SILA GENERAL
         </li>
     </ul>
 </div>
@@ -116,17 +116,18 @@
 
 <!-- JavaScript to Hide Preloader and Play Audio -->
 <script>
+    function playAudio() {
+        const audio = document.getElementById('background-audio');
+        audio.volume = 0.1; // Set volume to 10%
+        audio.play().catch(error => console.log("Autoplay blocked:", error));
+    }
+
     window.addEventListener('load', () => {
         setTimeout(() => {
             // Hide preloader
             const preloader = document.getElementById('preloader');
             preloader.classList.add('hide-preloader');
             document.body.style.overflow = 'auto';  // Restore scroll after preloader
-
-            // Play background music
-            const audio = document.getElementById('background-audio');
-            audio.volume = 0.1; // Set volume to 10%
-            audio.play().catch(error => console.log("Autoplay blocked:", error));
         }, 2000);  // 2000ms = 2 seconds delay
     });
 </script>
