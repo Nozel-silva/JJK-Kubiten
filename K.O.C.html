@@ -96,6 +96,7 @@
             text-align: center;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width:80%;
         }
 
         .popup button {
@@ -144,14 +145,15 @@
      
 
     <div class="popup" id="startPopup">
-        <h2>Reach a destruction level of ?k points</h2>
+        <h2>Reach a destruction level of 3k points before time elapses to show your might as the <b>King Of curses</b></h2>
+        
         <button onclick="startGame()">OK</button>
         <button onclick="location.KC.html">Back to Home</button>
     </div>
 <!-- Pop-up for winning -->
 <div class="popup" id="winPopup" style="display: none;">
     <h2>You win!</h2>
-    <button onclick="location.reload()">Play Again</button>
+    <button onclick="location.reload()">Play Again</button> 
     <button onclick="location.KC.html">Back to Home</button>
 </div>
 
@@ -179,7 +181,7 @@ let canClick = true;
 function updateScore(points) {
     score += points;
     document.getElementById('score').textContent = score;
-    if (score >= 1000) {
+    if (score >= 3000) {
         endGame("win");
     }
 }
