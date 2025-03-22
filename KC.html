@@ -9,84 +9,74 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
         }
 
         body {
-            background-color: black;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            background: url('sk.jpg') no-repeat center center/cover;
             height: 100vh;
-            overflow: hidden;
-        }
-
-        .video-container {
-            width: 100%;
-            height: 50vh;
-            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             position: relative;
         }
 
-        video {
+        /* Overlay to make background image opaque */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            background: rgba(255, 0, 0, 0.5); /* Red tint with opacity */
+            z-index: 0;
         }
 
         .menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+            text-align: center;
         }
 
-        .option {
+        .menu a {
             display: block;
             font-size: 24px;
-            color: red;
+            color: white;
             text-decoration: none;
-            margin: 15px 0;
-            position: relative;
-            transition: color 0.3s ease-in-out;
-            animation: float 2s ease-in-out infinite;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 5px black;
+            animation: bounce 1.5s infinite;
         }
 
-        .option:hover {
-            color: green;
+        .menu a:hover {
+            color: yellow;
         }
 
-        .disabled {
+        /* Disabled "Multiplayer" */
+        .menu .disabled {
+            pointer-events: none;
             opacity: 0.5;
-            cursor: not-allowed;
+            color: gray;
         }
 
-        .disabled:hover {
-            color: red;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0); }
+        /* Bouncing animation */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="video-container">
-        <video autoplay loop muted>
-            <source src="kc.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-    </div>
-
     <div class="menu">
-        <a href="K.O.C.html" class="option">Solo</a>
-        <a href="#" class="option disabled">Multiplayer (Unavailable)</a>
-        <a href="index.html" class="option">Back to Home</a>
+        <a href="K.O.C.html">Solo</a>
+        <a href="#" class="disabled">Multiplayer</a>
+        <a href="index.html">Back to Home Page</a>
     </div>
 
 </body>
