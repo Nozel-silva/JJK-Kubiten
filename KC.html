@@ -47,6 +47,7 @@
             margin: 20px 0;
             text-shadow: 2px 2px 5px black;
             animation: bounce 1.5s infinite;
+            cursor: pointer;
         }
 
         .menu a:hover {
@@ -69,6 +70,49 @@
                 transform: translateY(-10px);
             }
         }
+
+        /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px white;
+            width: 80%;
+            max-width: 400px;
+            z-index: 2;
+        }
+
+        .popup h2 {
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+
+        .popup p {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            background: red;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .close-btn:hover {
+            background: darkred;
+        }
+
     </style>
 </head>
 <body>
@@ -76,8 +120,28 @@
     <div class="menu">
         <a href="K.O.C.html">Solo</a>
         <a href="#" class="disabled">Multiplayer</a>
+        <a href="#" onclick="showPopup()">Controls</a>
         <a href="index.html">Back to Home Page</a>
     </div>
+
+    <!-- Controls Popup -->
+    <div class="popup" id="controlsPopup">
+        <h2>Curse Techniques</h2>
+        <p><b>🙏🏻</b> - 'Domain Expansion'.can only be used every 10 seconds</p>
+        <p><b>Dissect</b>- basic random slashes that cuts anything</p>
+        
+        <button class="close-btn" onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        function showPopup() {
+            document.getElementById('controlsPopup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('controlsPopup').style.display = 'none';
+        }
+    </script>
 
 </body>
 </html>
