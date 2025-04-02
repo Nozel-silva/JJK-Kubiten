@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 100vh;
+            background-color: #282c34;
+            position: relative;
+        }
+
+        .profile-container {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .health-bar {
+            width: 25vw; /* Quarter of the page width */
+            height: 15px;
+            background-color: red;
+            margin-left: 10px;
+            border-radius: 5px;
+        }
+
+        .avatar {
+            position: absolute;
+            bottom: 10px;
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Profile Image & Health Bar -->
+    <div class="profile-container">
+        <img src="profile.jpg" alt="Profile Image" class="profile-img">
+        <div class="health-bar"></div>
+    </div>
+
+    <!-- Avatar Image -->
+    <img src="avatar.png" alt="Avatar" class="avatar">
+
+</body>
+</html>
