@@ -3,112 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avatar Page</title>
+    <title>Avatar Battle</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: flex-end;
+            align-items: center;
+            flex-direction: column;
             height: 100vh;
             background-color: #282c34;
             position: relative;
         }
 
+        /* Health Bar Containers */
         .profile-container {
             position: absolute;
-            bottom: 10px;
-            left: 10px;
             display: flex;
             align-items: center;
+            width: 100%;
+            justify-content: space-between;
+            padding: 10px;
         }
 
-        .profile-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 2px solid white;
+        /* User Health (Bottom) */
+        .user-container {
+            bottom: 10px;
+            left: 10px;
         }
-
-        .health-bar {
-            width: 25vw; /* Quarter of the page width */
+        .user-health {
+            width: 25vw;
             height: 15px;
             background-color: blue;
             margin-left: 10px;
             border-radius: 5px;
         }
 
+        /* Computer Health (Top) */
+        .computer-container {
+            top: 10px;
+            right: 10px;
+        }
+        .computer-health {
+            width: 25vw;
+            height: 15px;
+            background-color: red;
+            margin-left: 10px;
+            border-radius: 5px;
+        }
+
+        /* Avatars */
         .avatar {
-            position: absolute;
-            bottom: 10px;
             width: 80px;
             height: 80px;
+            position: absolute;
+        }
+        .user-avatar {
+            bottom: 10px;
+        }
+        .computer-avatar {
+            top: 10px;
         }
 
+        /* Claw Slashes */
         .slash {
             position: absolute;
-            top: 10px;
-            left: 30px;
-            width: 150px;
+            width: 60px;
             height: 10px;
-            background-color: red;
+            background: red;
+            transform: rotate(25deg);
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
             clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
-            transform: rotate(45deg);
-            opacity: 0;
-            animation: slashAnimation 3s infinite;
         }
 
-        @keyframes slashAnimation {
-            0% {
-                opacity: 1;
-                left: 30px;
-            }
-            50% {
-                opacity: 1;
-                left: 30px;
-            }
-            100% {
-                opacity: 0;
-                left: 30px;
-            }
+        /* Minus Sign */
+        .minus-sign {
+            position: absolute;
+            color: red;
+            font-size: 30px;
+            font-weight: bold;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
         }
     </style>
 </head>
 <body>
 
-    <!-- Profile Image & Health Bar -->
-    <div class="profile-container">
-        <img src="profile.jpg" alt="Profile Image" class="profile-img">
-        <div class="health-bar" id="userHealthBar"></div>
+    <!-- Computer Avatar & Health -->
+    <div class="profile-container computer-container">
+        <div class="computer-health" id="computerHealth"></div>
+        <img src="computer_avatar.png" alt="Computer Avatar" class="avatar computer-avatar">
     </div>
 
-    <!-- Avatar Image -->
-    <img src="avatar.png" alt="Avatar" class="avatar" id="userAvatar">
-
-    <!-- Slash -->
-    <div class="slash" id="slash"></div>
+    <!-- User Avatar & Health -->
+    <div class="profile-container user-container">
+        <img src="user_avatar.png" alt="User Avatar" class="avatar user-avatar" id="userAvatar">
+        <div class="user-health" id="userHealth"></div>
+    </div>
 
     <script>
-        let userHealth = 100;
-        const userHealthBar = document.getElementById("userHealthBar");
-        const slash = document.getElementById("slash");
+        let userHealth = 100; 
 
-        // Function to decrease health by 4% on each slash
-        function slashHit() {
-            if (userHealth > 4) {
-                userHealth -= 4; // Reduce health by 4%
-                userHealthBar.style.width = userHealth + '%'; // Update health bar width
+        function createSlashEffect() {
+            const userAvatar = document.getElementById("userAvatar");
+            const userHealthBar = document.getElementById("userHealth");
+
+            // Slash Position (Fixed Spot)
+            const avatarRect = userAvatar.getBoundingClientRect();
+            const centerX = avatarRect.left + avatarRect.width / 2;
+            const centerY = avatarRect.top + avatarRect.height / 2;
+
+            // Create Three Claw Slashes
+            for (let i = -1; i <= 1; i++) {
+                let slash = document.createElement("div");
+                slash.classList.add("slash");
+                slash.style.left = centerX + i * 15 + "px";
+                slash.style.top = centerY + "px";
+                document.body.appendChild(slash);
+
+                setTimeout(() => {
+                    slash.style.opacity = "0";
+                    setTimeout(() => slash.remove(), 500);
+                }, 300);
+            }
+
+            // Create Red Minus Sign
+            let minusSign = document.createElement("div");
+            minusSign.classList.add("minus-sign");
+            minusSign.innerText = "−";
+            minusSign.style.left = centerX + "px";
+            minusSign.style.top = (centerY - 40) + "px";
+            document.body.appendChild(minusSign);
+
+            setTimeout(() => {
+                minusSign.style.opacity = "0";
+                setTimeout(() => minusSign.remove(), 500);
+            }, 500);
+
+            // Reduce Health by 4%
+            if (userHealth > 0) {
+                userHealth -= 4;
+                userHealthBar.style.width = userHealth + "%";
             }
         }
 
-        // Trigger slash every 3 seconds
-        setInterval(() => {
-            slashHit();
-            slash.style.animation = "slashAnimation 3s infinite"; // Trigger animation
-        }, 3000);
+        // Trigger slashing every 3 seconds
+        setInterval(createSlashEffect, 3000);
     </script>
 
 </body>
 </html>
-
