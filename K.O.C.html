@@ -1,382 +1,468 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Red Slashes & Falling Cubes</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: black;
-            width: 100vw;
-            height: 100vh;
-            position: fixed;
-        }
-        
-        #profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid white;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Red Slashes & Falling Cubes</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+    }
 
-        #info-container {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            border-radius: 8px;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+    #profile-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
 
-        .slash, .special-slash {
-            position: absolute;
-            width: 3px;
-            height: 80px;
-            background: red;
-            transform: rotate(45deg);
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
-            filter: brightness(100%);
-            border-radius: 50%;
-        }
+    #info-container {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 8px;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
 
-        .special-slash {
-            width: 6px;
-            height: 60vh;
-            background: white;
-        }
+    .slash, .special-slash {
+      position: absolute;
+      width: 3px;
+      height: 80px;
+      background: red;
+      transform: rotate(45deg);
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
+      filter: brightness(100%);
+      border-radius: 50%;
+    }
 
-        .cube, .big-cube {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: grey;
-            border-radius: 4px;
-        }
+    .special-slash {
+      width: 6px;
+      height: 60vh;
+      background: white;
+    }
 
-        .big-cube {
-            width: 50px;
-            height: 50px;
-        }
+    .cube {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: grey;
+      border-radius: 4px;
+    }
 
-        .trigger-btn, .special-btn {
-            position: fixed;
-            bottom: 10px;
-            background: red;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.7);
-        }
+    .trigger-btn, .special-btn {
+      position: fixed;
+      bottom: 10px;
+      background: red;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.7);
+    }
 
-        .trigger-btn:hover, .special-btn:hover {
-            background: darkred;
-        }
+    .trigger-btn:hover, .special-btn:hover {
+      background: darkred;
+    }
 
-        .trigger-btn { right: 10px; }
-        .special-btn { left: 10px; }
+    .trigger-btn { right: 10px; }
+    .special-btn { left: 10px; }
 
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width: 80%;
-        }
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      width: 80%;
+    }
 
-        .popup button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            background: red;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+    .popup button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      background: red;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
 
-        .score-timer {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            color: white;
-            font-size: 18px;
-        }
-    </style>
+    #health-bar-container {
+      position: fixed;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      border: 1px solid white;
+    }
+
+    #health-bar {
+      width: 100%;
+      height: 100%;
+      background: red;
+      border-radius: 50px;
+      transition: width 0.3s ease-in-out;
+    }
+
+    #target-box {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      border-radius: 10px;
+    }
+
+    #pause-btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 8px 14px;
+      background: white;
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    #target-box.hit {
+      animation: flashHit 0.4s;
+    }
+
+    @keyframes flashHit {
+      0% {
+        background: red;
+        transform: translateX(-50%) scale(1.1);
+      }
+      100% {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(-50%) scale(1);
+      }
+    }
+
+    /* Explosion particles */
+    .explosion {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: yellow;
+      border-radius: 50%;
+      opacity: 1;
+      animation: explode 0.5s forwards;
+    }
+
+    @keyframes explode {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(3);
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Fullscreen Video Background -->
-    <div id="video-container">
-        <video id="intro-video" autoplay muted playsinline>
-            <source src="intro.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-    </div>
+  <video id="intro-video" autoplay muted playsinline>
+    <source src="intro.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 
-    <!-- Info -->
-    <div id="info-container">
-        <img id="profile-pic" src="suku.png" alt="Profile" />
-        <span>Score: <span id="score">0</span></span>
-        <span>Time Left: <span id="timer">180</span>s</span>
-    </div>
+  <div id="info-container">
+    <img id="profile-pic" src="suku.png" alt="Profile" />
+    <span>Score: <span id="score">0</span></span>
+    <span>Time Left: <span id="timer">180</span>s</span>
+  </div>
 
-    <!-- Popups -->
-    <div class="popup" id="startPopup">
-        <h2>Reach a destruction level of 3k points before time elapses to show your might as the <b>King Of curses</b></h2>
-        <button onclick="startGame()">Start</button>
-        <button onclick="window.location.href='index.html';">Back to Homepage</button>
-    </div>
+  <div class="popup" id="startPopup">
+    <h2>Reach 3k points before time ends to prove your might as the <b>King of Curses</b></h2>
+    <button onclick="startGame()">Start</button>
+    <button onclick="window.location.href='index.html';">Back to Homepage</button>
+  </div>
 
-    <div class="popup" id="winPopup" style="display: none;">
-        <h2>You win!</h2>
-        <button onclick="location.reload()">Play Again</button>
-        <button onclick="window.location.href='index.html';">Back to Homepage</button>
-    </div>
+  <div class="popup" id="winPopup" style="display: none;">
+    <h2>You win!</h2>
+    <button onclick="location.reload()">Play Again</button>
+    <button onclick="window.location.href='index.html';">Back to Homepage</button>
+  </div>
 
-    <div class="popup" id="losePopup" style="display: none;">
-        <h2>You lose!</h2>
-        <button onclick="location.reload()">Try Again</button>
-        <button onclick="window.location.href='index.html';">Back to Homepage</button>
-    </div>
+  <div class="popup" id="losePopup" style="display: none;">
+    <h2>You lose!</h2>
+    <button onclick="location.reload()">Try Again</button>
+    <button onclick="window.location.href='index.html';">Back to Homepage</button>
+  </div>
 
-    <!-- Health Bar -->
-    <div id="health-bar-container" style="position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); width: 100px; height: 10px; background: rgba(255,255,255,0.2); border-radius: 50px; border: 1px solid white;">
-        <div id="health-bar" style="width: 100%; height: 100%; background: red; border-radius: 50px;"></div>
-    </div>
+  <div id="health-bar-container"><div id="health-bar"></div></div>
+  <div id="target-box"></div>
 
-    <!-- Target Box -->
-    <div id="target-box" style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); width: 50px; height: 50px; background: rgba(255,255,255,0.2); border: 2px solid white; border-radius: 10px;"></div>
+  <button class="trigger-btn" onclick="startSlashing()" disabled>🙏🏻</button>
+  <button class="special-btn" onclick="specialSlash()">Disect</button>
+  <button id="pause-btn" onclick="togglePause()">Pause</button>
 
-    <!-- Buttons -->
-    <button class="trigger-btn" onclick="startSlashing()" disabled>🙏🏻</button>
-    <button class="special-btn" onclick="specialSlash()">Disect</button>
+  <audio id="bgMusic" src="bg.mp3" loop></audio>
+  <audio id="disectSound" src="kai.mp3"></audio>
+  <audio id="slashSound" src="domain-expansion-sukuna.mp3"></audio>
 
-    <!-- Audio -->
-    <audio id="bgMusic" src="bg.mp3" loop></audio>
-    <audio id="disectSound" src="kai.mp3"></audio>
-    <audio id="slashSound" src="domain-expansion-sukuna.mp3 "></audio>
+  <script>
+    let score = 0, timeLeft = 180, health = 100;
+    let canClick = true, gameInterval, timerInterval, paused = false, gameOver = false;
 
-    <script>
-        let score = 0;
-        let timeLeft = 180;
-        let gameInterval, timerInterval;
-        let canClick = true;
-        let health = 100;
-        let gameOver = false;
+    function updateScore(points) {
+      score += points;
+      document.getElementById('score').textContent = score;
+      if (score >= 3000) endGame("win");
+    }
 
-        function updateScore(points) {
-            score += points;
-            document.getElementById('score').textContent = score;
-            if (score >= 3000) {
-                endGame("win");
-            }
+    function updateTimer() {
+      timerInterval = setInterval(() => {
+        if (!paused) {
+          timeLeft--;
+          document.getElementById('timer').textContent = timeLeft;
+          if (timeLeft <= 0) endGame("lose");
+        }
+      }, 1000);
+    }
+
+    function endGame(result) {
+      clearInterval(gameInterval);
+      clearInterval(timerInterval);
+      document.getElementById("bgMusic").pause();
+
+      if (result === "win") document.getElementById("winPopup").style.display = "block";
+      else document.getElementById("losePopup").style.display = "block";
+    }
+
+    function startGame() {
+      document.getElementById('startPopup').style.display = 'none';
+      document.getElementById("bgMusic").volume = 0.2;
+      document.getElementById("bgMusic").play();
+      updateTimer();
+
+      gameInterval = setInterval(() => {
+        if (!paused) {
+          for (let i = 0; i < 7; i++) createCube();
+        }
+      }, 2000);
+
+      setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
+    }
+
+    function createCube() {
+      const cube = document.createElement("div");
+      cube.classList.add("cube");
+      document.body.appendChild(cube);
+
+      const box = document.getElementById("target-box");
+      const boxRect = box.getBoundingClientRect();
+
+      cube.style.left = `${Math.random() * window.innerWidth}px`;
+      cube.style.top = "-20px";
+
+      let fallSpeed = Math.random() * 3 + 5;
+      let fallInterval = setInterval(() => {
+        if (paused) return;
+
+        const cubeRect = cube.getBoundingClientRect();
+        const dx = boxRect.left + boxRect.width/2 - (cubeRect.left + cubeRect.width/2);
+        const dy = boxRect.top + boxRect.height/2 - (cubeRect.top + cubeRect.height/2);
+        const angle = Math.atan2(dy, dx);
+
+        cube.style.left = `${cube.offsetLeft + Math.cos(angle) * fallSpeed}px`;
+        cube.style.top = `${cube.offsetTop + Math.sin(angle) * fallSpeed}px`;
+
+        if (cube.offsetTop > window.innerHeight) {
+          updateScore(-1);
+          clearInterval(fallInterval);
+          cube.remove();
         }
 
-        function updateTimer() {
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    endGame("lose");
-                }
-            }, 1000);
+        checkCollision(cube, fallInterval);
+        checkBoxHit(cube, fallInterval);
+      }, 20);
+    }
+
+    function checkCollision(cube, interval) {
+      document.querySelectorAll(".slash, .special-slash").forEach(slash => {
+        const cubeRect = cube.getBoundingClientRect();
+        const slashRect = slash.getBoundingClientRect();
+
+        if (
+          cubeRect.right > slashRect.left &&
+          cubeRect.left < slashRect.right &&
+          cubeRect.bottom > slashRect.top &&
+          cubeRect.top < slashRect.bottom
+        ) {
+          clearInterval(interval);
+          createExplosion(cube.offsetLeft, cube.offsetTop);
+          cube.style.background = "white";
+          cube.style.transition = "transform 0.3s, opacity 0.3s";
+          cube.style.transform = "scale(1.5) rotate(720deg)";
+          cube.style.opacity = "0";
+          setTimeout(() => cube.remove(), 300);
+          updateScore(2);
         }
+      });
+    }
 
-        function endGame(result) {
-            clearInterval(gameInterval);
-            clearInterval(timerInterval);
+    function checkBoxHit(cube, interval) {
+      const cubeRect = cube.getBoundingClientRect();
+      const box = document.getElementById("target-box");
+      const boxRect = box.getBoundingClientRect();
 
-            document.getElementById("bgMusic").pause();
-            document.getElementById("slashSound").pause();
-            document.getElementById("disectSound").pause();
+      if (
+        cubeRect.right > boxRect.left &&
+        cubeRect.left < boxRect.right &&
+        cubeRect.bottom > boxRect.top &&
+        cubeRect.top < boxRect.bottom
+      ) {
+        clearInterval(interval);
+        createExplosion(cube.offsetLeft, cube.offsetTop);
+        cube.remove();
+        reduceHealth();
+      }
+    }
 
-            if (result === "win") {
-                document.getElementById("winPopup").style.display = "block";
-            } else {
-                document.getElementById("losePopup").style.display = "block";
-            }
+    function reduceHealth() {
+      if (gameOver) return;
+
+      health -= 10;
+      if (health < 0) health = 0;
+
+      const bar = document.getElementById("health-bar");
+      bar.style.width = `${health}%`;
+
+      const box = document.getElementById("target-box");
+      box.classList.add("hit");
+      setTimeout(() => box.classList.remove("hit"), 400);
+
+      if (health <= 0) {
+        gameOver = true;
+        document.getElementById("bgMusic").pause();
+        setTimeout(() => {
+          alert("Game Over! You lose.");
+          location.reload();
+        }, 100);
+      }
+    }
+
+    setInterval(() => {
+      if (!paused && !gameOver && health < 100) {
+        health += 10;
+        if (health > 100) health = 100;
+        document.getElementById("health-bar").style.width = `${health}%`;
+      }
+    }, 3000);
+
+    function startSlashing() {
+      if (!canClick) return;
+      canClick = false;
+
+      const audio = document.getElementById("slashSound");
+      audio.play();
+
+      const interval = setInterval(() => {
+        if (!paused) {
+          for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
         }
+      }, 100);
 
-        function startGame() {
-            document.getElementById('startPopup').style.display = 'none';
+      setTimeout(() => {
+        clearInterval(interval);
+        setTimeout(() => canClick = true, 20000);
+      }, 10000);
+    }
 
-            const bgMusic = document.getElementById("bgMusic");
-            bgMusic.volume = 0.2;
-            bgMusic.play();
+    function createSlash(isTopHeavy) {
+      const slash = document.createElement("div");
+      slash.classList.add("slash");
+      document.body.appendChild(slash);
 
-            updateTimer();
-            gameInterval = setInterval(() => {
-                for (let i = 0; i < 7; i++) createCube();
-            }, 1000);
+      const x = Math.random() * window.innerWidth;
+      const y = isTopHeavy ? Math.random() * (window.innerHeight * 0.3) : Math.random() * window.innerHeight;
+      slash.style.left = `${x}px`;
+      slash.style.top = `${y}px`;
+      slash.style.transform = `rotate(${Math.random() * 360}deg)`;
 
-            setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
-        }
+      setTimeout(() => slash.style.opacity = 1, 100);
+      setTimeout(() => {
+        slash.style.opacity = 0;
+        setTimeout(() => slash.remove(), 500);
+      }, 700);
+    }
 
-        function createCube() {
-            const cube = document.createElement("div");
-            cube.classList.add("cube");
-            document.body.appendChild(cube);
+    function specialSlash() {
+      const audio = document.getElementById("disectSound");
+      audio.play();
 
-            const box = document.getElementById("target-box");
-            const boxRect = box.getBoundingClientRect();
+      for (let i = 0; i < 3; i++) {
+        const slash = document.createElement("div");
+        slash.classList.add("special-slash");
+        document.body.appendChild(slash);
 
-            cube.style.left = `${Math.random() * window.innerWidth}px`;
-            cube.style.top = "-20px";
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight;
+        slash.style.left = `${x}px`;
+        slash.style.top = `${y}px`;
+        slash.style.transform = `rotate(${Math.random() * 360}deg)`;
 
-            let fallSpeed = Math.random() * 2 + 2;
-            let fallInterval = setInterval(() => {
-                const cubeRect = cube.getBoundingClientRect();
-                const dx = boxRect.left + boxRect.width / 2 - (cubeRect.left + cubeRect.width / 2);
-                const dy = boxRect.top + boxRect.height / 2 - (cubeRect.top + cubeRect.height / 2);
-                const angle = Math.atan2(dy, dx);
+        setTimeout(() => slash.style.opacity = 1, 100);
+        setTimeout(() => {
+          slash.style.opacity = 0;
+          setTimeout(() => slash.remove(), 500);
+        }, 700);
+      }
+    }
 
-                cube.style.left = `${cube.offsetLeft + Math.cos(angle) * fallSpeed}px`;
-                cube.style.top = `${cube.offsetTop + Math.sin(angle) * fallSpeed}px`;
+    function togglePause() {
+      paused = !paused;
+      document.getElementById("pause-btn").innerText = paused ? "Resume" : "Pause";
+      if (paused) document.getElementById("bgMusic").pause();
+      else document.getElementById("bgMusic").play();
+    }
 
-                if (cube.offsetTop > window.innerHeight) {
-                    updateScore(-1);
-                    clearInterval(fallInterval);
-                    cube.remove();
-                }
+    function createExplosion(x, y) {
+      for (let i = 0; i < 5; i++) {
+        const particle = document.createElement("div");
+        particle.classList.add("explosion");
+        document.body.appendChild(particle);
 
-                checkCollision(cube, fallInterval);
-                checkBoxHit(cube, fallInterval);
-            }, 20);
-        }
+        const offsetX = (Math.random() - 0.5) * 20;
+        const offsetY = (Math.random() - 0.5) * 20;
 
-        function createSlash(isTopHeavy) {
-            const slash = document.createElement("div");
-            slash.classList.add("slash");
-            document.body.appendChild(slash);
+        particle.style.left = `${x + offsetX}px`;
+        particle.style.top = `${y + offsetY}px`;
 
-            const x = Math.random() * window.innerWidth;
-            const y = isTopHeavy ? Math.random() * (window.innerHeight * 0.3) : Math.random() * window.innerHeight;
-            slash.style.left = `${x}px`;
-            slash.style.top = `${y}px`;
-
-            const rotation = Math.random() * 360;
-            slash.style.transform = `rotate(${rotation}deg)`;
-
-            setTimeout(() => slash.style.opacity = 1, 100);
-            setTimeout(() => {
-                slash.style.opacity = 0;
-                setTimeout(() => slash.remove(), 500);
-            }, 700);
-        }
-
-        function startSlashing() {
-            if (!canClick) return;
-            canClick = false;
-
-            const audio = document.getElementById("slashSound");
-            audio.play();
-
-            const interval = setInterval(() => {
-                for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
-            }, 100);
-
-            setTimeout(() => {
-                clearInterval(interval);
-                setTimeout(() => canClick = true, 20000);
-            }, 10000);
-        }
-
-        function specialSlash() {
-            const audio = document.getElementById("disectSound");
-            audio.play();
-
-            for (let i = 0; i < 3; i++) {
-                const slash = document.createElement("div");
-                slash.classList.add("special-slash");
-                document.body.appendChild(slash);
-
-                const x = Math.random() * window.innerWidth;
-                const y = Math.random() * window.innerHeight;
-                slash.style.left = `${x}px`;
-                slash.style.top = `${y}px`;
-
-                const rotation = Math.random() * 360;
-                slash.style.transform = `rotate(${rotation}deg)`;
-
-                setTimeout(() => slash.style.opacity = 1, 100);
-                setTimeout(() => {
-                    slash.style.opacity = 0;
-                    setTimeout(() => slash.remove(), 500);
-                }, 700);
-            }
-        }
-
-        function checkCollision(cube, interval) {
-            document.querySelectorAll(".slash, .special-slash").forEach(slash => {
-                const cubeRect = cube.getBoundingClientRect();
-                const slashRect = slash.getBoundingClientRect();
-
-                if (
-                    cubeRect.right > slashRect.left &&
-                    cubeRect.left < slashRect.right &&
-                    cubeRect.bottom > slashRect.top &&
-                    cubeRect.top < slashRect.bottom
-                ) {
-                    clearInterval(interval);
-                    cube.style.background = "white";
-                    cube.style.transition = "transform 0.3s, opacity 0.3s";
-                    cube.style.transform = "scale(1.5) rotate(720deg)";
-                    cube.style.opacity = "0";
-                    setTimeout(() => cube.remove(), 300);
-                    updateScore(2);
-                }
-            });
-        }
-
-        function checkBoxHit(cube, interval) {
-            const cubeRect = cube.getBoundingClientRect();
-            const boxRect = document.getElementById("target-box").getBoundingClientRect();
-
-            if (
-                cubeRect.right > boxRect.left &&
-                cubeRect.left < boxRect.right &&
-                cubeRect.bottom > boxRect.top &&
-                cubeRect.top < boxRect.bottom
-            ) {
-                clearInterval(interval);
-                cube.remove();
-                reduceHealth();
-            }
-        }
-
-        function reduceHealth() {
-            if (gameOver) return;
-
-            health -= 10;
-            if (health < 0) health = 0;
-
-            const bar = document.getElementById("health-bar");
-            bar.style.width = `${health}%`;
-
-            if (health <= 0) {
-                gameOver = true;
-                alert("Game Over! You lose.");
-                clearInterval(gameInterval);
-                clearInterval(timerInterval);
-                document.getElementById("bgMusic").pause();
-            }
-        }
-    </script>
+        setTimeout(() => particle.remove(), 500);
+      }
+    }
+  </script>
 </body>
 </html>
