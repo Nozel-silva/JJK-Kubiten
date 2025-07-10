@@ -127,16 +127,19 @@
     }
 
     #target-box {
-      position: fixed;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 50px;
-      height: 50px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid white;
-      border-radius: 10px;
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  background-image: url('your-image.png'); /* Replace with your actual image path */
+  background-size: cover;
+  background-position: center;
+  border: 2px solid white;
+  border-radius: 10px;
     }
+    
 
     #pause-btn {
       position: fixed;
@@ -442,11 +445,12 @@
     }
 
     function togglePause() {
-      paused = !paused;
-      document.getElementById("pause-btn").innerText = paused ? "Resume" : "Pause";
-      if (paused) document.getElementById("bgMusic").pause();
-      else document.getElementById("bgMusic").play();
-    }
+  paused = !paused;
+  document.getElementById("pause-btn").innerText = paused ? "Resume" : "Pause";
+  if (paused) document.getElementById("bgMusic").pause();
+  else document.getElementById("bgMusic").play();
+          }
+    
 
     function createExplosion(x, y) {
       for (let i = 0; i < 5; i++) {
