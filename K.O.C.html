@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,25 +15,27 @@
             position: fixed;
         }
         
-     #profile-pic {
-    width: 40px;        
-    height: 40px;       
-    border-radius: 50%; 
-    object-fit: cover;  
-    border: 2px solid white; 
-}
+        #profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
 
-#info-container {
-    position: fixed;      
-    top: 10px;            
-    left: 10px;           
-    background-color: rgba(0, 0, 0, 0.5); 
-    padding: 5px 10px;    
-    border-radius: 8px;   
-    color: white;          
-    font-family: Arial, sans-serif;
-}
-
+        #info-container {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 8px;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
         .slash, .special-slash {
             position: absolute;
@@ -44,7 +46,7 @@
             opacity: 0;
             transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
             filter: brightness(100%);
-            border-radius: 50% 50% 50% 50%;
+            border-radius: 50%;
         }
 
         .special-slash {
@@ -96,7 +98,7 @@
             text-align: center;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width:80%;
+            width: 80%;
         }
 
         .popup button {
@@ -116,13 +118,9 @@
             color: white;
             font-size: 18px;
         }
-        
-        
     </style>
 </head>
-
-    
-    <body onload="">
+<body>
     <!-- Fullscreen Video Background -->
     <div id="video-container">
         <video id="intro-video" autoplay muted playsinline>
@@ -131,216 +129,254 @@
         </video>
     </div>
 
-    <!-- Main Content (Initially Hidden) -->
-    
-        <div id="info-container" style="display: flex; align-items: center; gap: 15px;">
-    <img id="profile-pic" src="suku.png" alt="Profile" />
-    <span>Score: <span id="score">0</span></span>
-    <span>Time Left: <span id="timer">180</span>s</span>
-</div>
-        <!-- Your other game contents go here -->
- 
+    <!-- Info -->
+    <div id="info-container">
+        <img id="profile-pic" src="suku.png" alt="Profile" />
+        <span>Score: <span id="score">0</span></span>
+        <span>Time Left: <span id="timer">180</span>s</span>
+    </div>
 
- 
-      
-
+    <!-- Popups -->
     <div class="popup" id="startPopup">
         <h2>Reach a destruction level of 3k points before time elapses to show your might as the <b>King Of curses</b></h2>
-        
         <button onclick="startGame()">Start</button>
-        <button onclick="window.location.href='index.html';">
-   Back to Homepage
-</button>
+        <button onclick="window.location.href='index.html';">Back to Homepage</button>
     </div>
-<!-- Pop-up for winning -->
-<div class="popup" id="winPopup" style="display: none;">
-    <h2>You win!</h2>
-    <button onclick="location.reload()">Play Again</button> 
-    <button onclick="window.location.href='index.html';">
-   Back to Homepage
-</button>
 
-</div>
+    <div class="popup" id="winPopup" style="display: none;">
+        <h2>You win!</h2>
+        <button onclick="location.reload()">Play Again</button>
+        <button onclick="window.location.href='index.html';">Back to Homepage</button>
+    </div>
 
-<!-- Pop-up for losing -->
-<div class="popup" id="losePopup" style="display: none;">
-    <h2>You lose!</h2>
-    <button onclick="location.reload()">Try Again</button>
-   <button onclick="window.location.href='index.html';">
-   Back to Homepage
-   </button>
-</div>
+    <div class="popup" id="losePopup" style="display: none;">
+        <h2>You lose!</h2>
+        <button onclick="location.reload()">Try Again</button>
+        <button onclick="window.location.href='index.html';">Back to Homepage</button>
+    </div>
 
+    <!-- Health Bar -->
+    <div id="health-bar-container" style="position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); width: 100px; height: 10px; background: rgba(255,255,255,0.2); border-radius: 50px; border: 1px solid white;">
+        <div id="health-bar" style="width: 100%; height: 100%; background: red; border-radius: 50px;"></div>
+    </div>
+
+    <!-- Target Box -->
+    <div id="target-box" style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); width: 50px; height: 50px; background: rgba(255,255,255,0.2); border: 2px solid white; border-radius: 10px;"></div>
+
+    <!-- Buttons -->
     <button class="trigger-btn" onclick="startSlashing()" disabled>🙏🏻</button>
     <button class="special-btn" onclick="specialSlash()">Disect</button>
-    
-<audio id="bgMusic" src="bg.mp3" loop></audio>
 
+    <!-- Audio -->
+    <audio id="bgMusic" src="bg.mp3" loop></audio>
     <audio id="disectSound" src="kai.mp3"></audio>
     <audio id="slashSound" src="domain-expansion-sukuna.mp3 "></audio>
 
-
     <script>
         let score = 0;
-let timeLeft = 180;
-let gameInterval, timerInterval;
-let canClick = true;
+        let timeLeft = 180;
+        let gameInterval, timerInterval;
+        let canClick = true;
+        let health = 100;
+        let gameOver = false;
 
-function updateScore(points) {
-    score += points;
-    document.getElementById('score').textContent = score;
-    if (score >= 3000) {
-        endGame("win");
-    }
-}
-
-function updateTimer() {
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById('timer').textContent = timeLeft;
-        if (timeLeft <= 0) {
-            endGame("lose");
+        function updateScore(points) {
+            score += points;
+            document.getElementById('score').textContent = score;
+            if (score >= 3000) {
+                endGame("win");
+            }
         }
-    }, 1000);
-}
 
-function endGame(result) {
-    clearInterval(gameInterval);
-    clearInterval(timerInterval);
-
-    // Stop all audio
-    document.getElementById("bgMusic").pause();
-    document.getElementById("slashSound").pause();
-    document.getElementById("disectSound").pause();
-
-    // Show appropriate pop-up
-    if (result === "win") {
-        document.getElementById("winPopup").style.display = "block";
-    } else if (result === "lose") {
-        document.getElementById("losePopup").style.display = "block";
-    }
-}
-
-function startGame() {
-    document.getElementById('startPopup').style.display = 'none';
-
-    const bgMusic = document.getElementById("bgMusic");
-    bgMusic.volume = 0.2;  // Set volume to 50%
-    bgMusic.play();  // Play background music when OK is clicked
-
-    updateTimer();
-    gameInterval = setInterval(() => {
-        for (let i = 0; i < 7; i++) createCube();
-    }, 1000);
-
-    setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
-}
-
-function createCube() {
-    const cube = document.createElement("div");
-    cube.classList.add("cube");
-    document.body.appendChild(cube);
-
-    cube.style.left = `${Math.random() * window.innerWidth}px`;
-    cube.style.top = "-20px";
-
-    let fallSpeed = Math.random() * 5 + 4;
-    let fallInterval = setInterval(() => {
-        cube.style.top = `${cube.offsetTop + fallSpeed}px`;
-        if (cube.offsetTop > window.innerHeight) {
-            updateScore(-1);
-            clearInterval(fallInterval);
-            cube.remove();
+        function updateTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    endGame("lose");
+                }
+            }, 1000);
         }
-        checkCollision(cube, fallInterval);
-    }, 20);
-}
 
-function createSlash(isTopHeavy) {
-    const slash = document.createElement("div");
-    slash.classList.add("slash");
-    document.body.appendChild(slash);
+        function endGame(result) {
+            clearInterval(gameInterval);
+            clearInterval(timerInterval);
 
-    const x = Math.random() * window.innerWidth;
-    const y = isTopHeavy ? Math.random() * (window.innerHeight * 0.3) : Math.random() * window.innerHeight;
-    slash.style.left = `${x}px`;
-    slash.style.top = `${y}px`;
+            document.getElementById("bgMusic").pause();
+            document.getElementById("slashSound").pause();
+            document.getElementById("disectSound").pause();
 
-    const rotation = Math.random() * 360;
-    slash.style.transform = `rotate(${rotation}deg)`;
-
-    setTimeout(() => slash.style.opacity = 1, 100);
-    setTimeout(() => {
-        slash.style.opacity = 0;
-        setTimeout(() => slash.remove(), 500);
-    }, 700);
-}
-
-function startSlashing() {
-    if (!canClick) return;
-    canClick = false;
-
-    const audio = document.getElementById("slashSound");
-    audio.play();  // Play the new sound when the button is clicked
-
-    const interval = setInterval(() => {
-        for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
-    }, 100);
-
-    setTimeout(() => {
-        clearInterval(interval);
-        setTimeout(() => canClick = true, 20000);
-    }, 10000);
-}
-
-function specialSlash() {
-    const audio = document.getElementById("disectSound");
-    audio.play();
-
-    for (let i = 0; i < 3; i++) {
-        const slash = document.createElement("div");
-        slash.classList.add("special-slash");
-        document.body.appendChild(slash);
-
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * window.innerHeight;
-        slash.style.left = `${x}px`;
-        slash.style.top = `${y}px`;
-
-        const rotation = Math.random() * 360;
-        slash.style.transform = `rotate(${rotation}deg)`;
-
-        setTimeout(() => slash.style.opacity = 1, 100);
-        setTimeout(() => {
-            slash.style.opacity = 0;
-            setTimeout(() => slash.remove(), 500);
-        }, 700);
-    }
-}
-
-function checkCollision(cube, interval) {
-    document.querySelectorAll(".slash, .special-slash").forEach(slash => {
-        const cubeRect = cube.getBoundingClientRect();
-        const slashRect = slash.getBoundingClientRect();
-
-        if (
-            cubeRect.right > slashRect.left &&
-            cubeRect.left < slashRect.right &&
-            cubeRect.bottom > slashRect.top &&
-            cubeRect.top < slashRect.bottom
-        ) {
-            clearInterval(interval);
-            cube.style.background = "white";
-            cube.style.transition = "transform 0.3s, opacity 0.3s";
-            cube.style.transform = "scale(1.5) rotate(720deg)";
-            cube.style.opacity = "0";
-            setTimeout(() => cube.remove(), 300);
-            updateScore(2);
+            if (result === "win") {
+                document.getElementById("winPopup").style.display = "block";
+            } else {
+                document.getElementById("losePopup").style.display = "block";
+            }
         }
-    });
-}
 
+        function startGame() {
+            document.getElementById('startPopup').style.display = 'none';
+
+            const bgMusic = document.getElementById("bgMusic");
+            bgMusic.volume = 0.2;
+            bgMusic.play();
+
+            updateTimer();
+            gameInterval = setInterval(() => {
+                for (let i = 0; i < 7; i++) createCube();
+            }, 1000);
+
+            setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
+        }
+
+        function createCube() {
+            const cube = document.createElement("div");
+            cube.classList.add("cube");
+            document.body.appendChild(cube);
+
+            const box = document.getElementById("target-box");
+            const boxRect = box.getBoundingClientRect();
+
+            cube.style.left = `${Math.random() * window.innerWidth}px`;
+            cube.style.top = "-20px";
+
+            let fallSpeed = Math.random() * 2 + 2;
+            let fallInterval = setInterval(() => {
+                const cubeRect = cube.getBoundingClientRect();
+                const dx = boxRect.left + boxRect.width / 2 - (cubeRect.left + cubeRect.width / 2);
+                const dy = boxRect.top + boxRect.height / 2 - (cubeRect.top + cubeRect.height / 2);
+                const angle = Math.atan2(dy, dx);
+
+                cube.style.left = `${cube.offsetLeft + Math.cos(angle) * fallSpeed}px`;
+                cube.style.top = `${cube.offsetTop + Math.sin(angle) * fallSpeed}px`;
+
+                if (cube.offsetTop > window.innerHeight) {
+                    updateScore(-1);
+                    clearInterval(fallInterval);
+                    cube.remove();
+                }
+
+                checkCollision(cube, fallInterval);
+                checkBoxHit(cube, fallInterval);
+            }, 20);
+        }
+
+        function createSlash(isTopHeavy) {
+            const slash = document.createElement("div");
+            slash.classList.add("slash");
+            document.body.appendChild(slash);
+
+            const x = Math.random() * window.innerWidth;
+            const y = isTopHeavy ? Math.random() * (window.innerHeight * 0.3) : Math.random() * window.innerHeight;
+            slash.style.left = `${x}px`;
+            slash.style.top = `${y}px`;
+
+            const rotation = Math.random() * 360;
+            slash.style.transform = `rotate(${rotation}deg)`;
+
+            setTimeout(() => slash.style.opacity = 1, 100);
+            setTimeout(() => {
+                slash.style.opacity = 0;
+                setTimeout(() => slash.remove(), 500);
+            }, 700);
+        }
+
+        function startSlashing() {
+            if (!canClick) return;
+            canClick = false;
+
+            const audio = document.getElementById("slashSound");
+            audio.play();
+
+            const interval = setInterval(() => {
+                for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                setTimeout(() => canClick = true, 20000);
+            }, 10000);
+        }
+
+        function specialSlash() {
+            const audio = document.getElementById("disectSound");
+            audio.play();
+
+            for (let i = 0; i < 3; i++) {
+                const slash = document.createElement("div");
+                slash.classList.add("special-slash");
+                document.body.appendChild(slash);
+
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                slash.style.left = `${x}px`;
+                slash.style.top = `${y}px`;
+
+                const rotation = Math.random() * 360;
+                slash.style.transform = `rotate(${rotation}deg)`;
+
+                setTimeout(() => slash.style.opacity = 1, 100);
+                setTimeout(() => {
+                    slash.style.opacity = 0;
+                    setTimeout(() => slash.remove(), 500);
+                }, 700);
+            }
+        }
+
+        function checkCollision(cube, interval) {
+            document.querySelectorAll(".slash, .special-slash").forEach(slash => {
+                const cubeRect = cube.getBoundingClientRect();
+                const slashRect = slash.getBoundingClientRect();
+
+                if (
+                    cubeRect.right > slashRect.left &&
+                    cubeRect.left < slashRect.right &&
+                    cubeRect.bottom > slashRect.top &&
+                    cubeRect.top < slashRect.bottom
+                ) {
+                    clearInterval(interval);
+                    cube.style.background = "white";
+                    cube.style.transition = "transform 0.3s, opacity 0.3s";
+                    cube.style.transform = "scale(1.5) rotate(720deg)";
+                    cube.style.opacity = "0";
+                    setTimeout(() => cube.remove(), 300);
+                    updateScore(2);
+                }
+            });
+        }
+
+        function checkBoxHit(cube, interval) {
+            const cubeRect = cube.getBoundingClientRect();
+            const boxRect = document.getElementById("target-box").getBoundingClientRect();
+
+            if (
+                cubeRect.right > boxRect.left &&
+                cubeRect.left < boxRect.right &&
+                cubeRect.bottom > boxRect.top &&
+                cubeRect.top < boxRect.bottom
+            ) {
+                clearInterval(interval);
+                cube.remove();
+                reduceHealth();
+            }
+        }
+
+        function reduceHealth() {
+            if (gameOver) return;
+
+            health -= 10;
+            if (health < 0) health = 0;
+
+            const bar = document.getElementById("health-bar");
+            bar.style.width = `${health}%`;
+
+            if (health <= 0) {
+                gameOver = true;
+                alert("Game Over! You lose.");
+                clearInterval(gameInterval);
+                clearInterval(timerInterval);
+                document.getElementById("bgMusic").pause();
+            }
+        }
     </script>
 </body>
 </html>
- 
