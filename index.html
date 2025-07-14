@@ -1,31 +1,38 @@
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anime Games by Nuel_sama</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 <style>
-    /* Dark Background and Basic Styles */
     body {
-        background-color: #121212;
-        color: #fff;
-        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+        color: #00ffea;
+        font-family: 'Orbitron', sans-serif;
         margin: 0;
         padding: 0;
         text-align: center;
-        overflow: hidden;  /* Prevent scroll during preloader */
+        overflow: hidden;
+        position: relative;
     }
 
-    /* Preloader Styles */
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: url('https://www.transparenttextures.com/patterns/circuit-board.png');
+        opacity: 0.03;
+        z-index: 0;
+    }
+
     #preloader {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #121212;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: #0a0a0a;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -35,77 +42,77 @@
 
     .preloader-text {
         font-size: 3em;
-        color: #0f0;
-        animation: bounceIn 1.5s ease-out;
+        color: #00ffea;
+        text-shadow: 0 0 20px #00ffea, 0 0 40px #00ffea;
+        animation: flicker 2s infinite alternate;
     }
 
-    /* Hide Preloader Animation */
     .hide-preloader {
         opacity: 0;
         visibility: hidden;
         transition: opacity 1s ease-out, visibility 1s ease-out;
     }
 
-    /* Bounce In Animation for Preloader */
-    @keyframes bounceIn {
-        0% { transform: scale(0.5); opacity: 0; }
-        60% { transform: scale(1.2); opacity: 1; }
-        100% { transform: scale(1); }
+    @keyframes flicker {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.05); }
+        100% { opacity: 1; transform: scale(1); }
     }
 
-    /* Main Content */
     .content {
         max-width: 800px;
         margin: 0 auto;
         padding: 20px;
-        opacity: 0;  /* Hidden until preloader disappears */
+        opacity: 0;
         animation: fadeIn 1s ease-out forwards;
-        animation-delay: 2s;  /* Delay to sync with preloader hide */
+        animation-delay: 2s;
+        position: relative;
+        z-index: 1;
     }
 
-    /* Fade In Animation for Content */
     @keyframes fadeIn {
         to { opacity: 1; }
     }
 
-    /* Header Styles */
     .header {
-        font-size: 1.8em;
+        font-size: 2em;
         margin: 20px 0 10px;
-        transition: color 0.5s;
+        color: #00ffea;
     }
 
     .inactive {
-        color: #555;  /* Dim for inactive headers */
+        color: #555;
     }
 
-    /* Profile Picture Styles */
     .profile-pic {
         width: 150px;
         height: 150px;
         border-radius: 50%;
         margin: 0 auto 10px;
         display: block;
-        border: 2px solid #0f0;
+        border: 2px solid #00ffea;
     }
 
-    /* Animated Description Styles */
     .description {
         margin: 0 0 20px;
         color: #bbb;
         font-size: 1em;
         display: inline-block;
-        animation: wordBounce 3s ease-in-out infinite;
+        animation: typing 5s steps(60, end), blink .75s step-end infinite;
+        white-space: nowrap;
+        overflow: hidden;
+        border-right: 3px solid #00ffea;
     }
 
-    /* Up and Down Animation for Words */
-    @keyframes wordBounce {
-        0%, 100% { transform: translateY(0); }
-        25% { transform: translateY(-5px); }
-        75% { transform: translateY(5px); }
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
     }
 
-    /* Anime List Styles */
+    @keyframes blink {
+        50% { border-color: transparent; }
+    }
+
     .anime-list {
         list-style-type: none;
         padding: 0;
@@ -129,7 +136,7 @@
 
     .anime-list li a {
         text-decoration: none;
-        color: #0f0;  /* Green for active links */
+        color: #00ffea;
     }
 
     .anime-list li a:hover {
@@ -137,28 +144,44 @@
     }
 
     .anime-list li.active {
-        color: #0f0;
+        color: #00ffea;
     }
 
     .anime-list li.inactive {
-        color: #555;  /* Dim for inactive items */
-        pointer-events: none;  /* Disable click */
+        color: #555;
+        pointer-events: none;
     }
 
     .anime-list li:hover {
         transform: scale(1.05);
     }
 
-    /* Footer Styles */
+    .globe-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 80px;
+        height: 80px;
+        animation: spin 20s linear infinite;
+        z-index: 10;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
     footer {
         margin-top: 20px;
         padding: 10px 0;
         background-color: #181818;
         color: #888;
+        z-index: 1;
+        position: relative;
     }
 
     footer a {
-        color: #0f0;
+        color: #00ffea;
         text-decoration: none;
         margin: 0 10px;
     }
@@ -170,22 +193,19 @@
 </head>
 
 <body>
-
-<!-- Preloader Screen -->
 <div id="preloader">
     <h1 class="preloader-text">Nuel_sama</h1>
 </div>
 
-<!-- Main Content -->
+<!-- Rotating Globe -->
+<div class="globe-container">
+    🌎
+</div>
+
 <div class="content">
-
-    <!-- Profile Picture -->
     <img src="Founder1.jpg" alt="Nuel_sama" class="profile-pic">
-
-    <!-- Personalized Introduction Text -->
     <p class="description">Hey there! I'm just having fun creating 2D anime-inspired games in my spare time. Whether it's epic battles, dark curses, or legendary characters, I'm all about bringing anime vibes into gaming. Check out what I've got so far and keep an eye out for new releases!</p>
 
-    <!-- Header 1: Jujutsu Kaisen -->
     <h2 class="header">Jujutsu Kaisen</h2>
     <ul class="anime-list">
         <li><a href="KC.html" class="active">
@@ -202,7 +222,6 @@
         </li>
     </ul>
 
-    <!-- Inactive Headers with Descriptions -->
     <h2 class="header inactive">Demon Slayer</h2>
     <p class="description">Prepare to slay demons and uncover dark secrets. Coming soon!</p>
 
@@ -211,10 +230,8 @@
 
     <h2 class="header inactive">Attack on Titan</h2>
     <p class="description">Fight for humanity's survival against monstrous titans. Coming soon!</p>
-
 </div>
 
-<!-- Footer with Contact Information -->
 <footer>
     <p>Connect with me:</p>
     <a href="https://x.com/Nostalgic_Nuel " target="_blank">X (Twitter)</a> |
@@ -222,16 +239,14 @@
     <a href=" https://www.linkedin.com/in/emmanuel-agafie-5983b41b5?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">LinkedIn</a>
 </footer>
 
-<!-- JavaScript to Hide Preloader After 2 Seconds -->
 <script>
     window.addEventListener('load', () => {
         setTimeout(() => {
             const preloader = document.getElementById('preloader');
             preloader.classList.add('hide-preloader');
-            document.body.style.overflow = 'auto';  // Restore scroll after preloader
-        }, 2000);  // 2000ms = 2 seconds delay
+            document.body.style.overflow = 'auto';
+        }, 2000);
     });
 </script>
-
 </body>
 </html>
