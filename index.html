@@ -1,252 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anime Games by Nuel_sama</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anime Games by Nuel_sama</title>
+  <style>
     body {
-        background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
-        color: #00ffea;
-        font-family: 'Orbitron', sans-serif;
-        margin: 0;
-        padding: 0;
-        text-align: center;
-        overflow: hidden;
-        position: relative;
-    }
-
-    body::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: url('https://www.transparenttextures.com/patterns/circuit-board.png');
-        opacity: 0.03;
-        z-index: 0;
+      background-color: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      overflow: hidden;
     }
 
     #preloader {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background-color: #0a0a0a;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: opacity 1s ease-out, visibility 1s ease-out;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #121212;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 1s ease-out, visibility 1s ease-out;
     }
 
     .preloader-text {
-        font-size: 3em;
-        color: #00ffea;
-        text-shadow: 0 0 20px #00ffea, 0 0 40px #00ffea;
-        animation: flicker 2s infinite alternate;
+      font-size: 3em;
+      color: #0f0;
+      animation: bounceIn 1.5s ease-out;
     }
 
     .hide-preloader {
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 1s ease-out, visibility 1s ease-out;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1s ease-out, visibility 1s ease-out;
     }
 
-    @keyframes flicker {
-        0% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.7; transform: scale(1.05); }
-        100% { opacity: 1; transform: scale(1); }
+    @keyframes bounceIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); }
     }
 
     .content {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-        opacity: 0;
-        animation: fadeIn 1s ease-out forwards;
-        animation-delay: 2s;
-        position: relative;
-        z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      opacity: 0;
+      animation: fadeIn 1s ease-out forwards;
+      animation-delay: 2s;
     }
 
     @keyframes fadeIn {
-        to { opacity: 1; }
+      to { opacity: 1; }
     }
 
     .header {
-        font-size: 2em;
-        margin: 20px 0 10px;
-        color: #00ffea;
+      font-size: 1.8em;
+      margin: 20px 0 10px;
+      transition: color 0.5s;
     }
 
     .inactive {
-        color: #555;
+      color: #555;
     }
 
     .profile-pic {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        margin: 0 auto 10px;
-        display: block;
-        border: 2px solid #00ffea;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      display: block;
+      border: 2px solid #0f0;
     }
 
-    .description {
-        margin: 0 0 20px;
-        color: #bbb;
-        font-size: 1em;
-        display: inline-block;
-        animation: typing 5s steps(60, end), blink .75s step-end infinite;
-        white-space: nowrap;
-        overflow: hidden;
-        border-right: 3px solid #00ffea;
-    }
-
-    @keyframes typing {
-        from { width: 0 }
-        to { width: 100% }
+    /* Self-Writing Typewriter */
+    #typewriter {
+      color: #0f0;
+      font-size: 1em;
+      margin: 20px auto;
+      white-space: pre-wrap;
+      display: inline-block;
+      border-right: 2px solid #0f0;
+      overflow: hidden;
+      animation: blink 0.75s step-end infinite;
     }
 
     @keyframes blink {
-        50% { border-color: transparent; }
+      50% { border-color: transparent; }
     }
 
     .anime-list {
-        list-style-type: none;
-        padding: 0;
-        margin: 0 0 40px;
+      list-style-type: none;
+      padding: 0;
+      margin: 0 0 40px;
     }
 
     .anime-list li {
-        margin: 10px 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.3s;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s;
     }
 
     .anime-list li img {
-        width: 70px;
-        height: 70px;
-        border-radius: 50px;
-        margin-right: 10px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50px;
+      margin-right: 10px;
     }
 
     .anime-list li a {
-        text-decoration: none;
-        color: #00ffea;
+      text-decoration: none;
+      color: #0f0;
     }
 
     .anime-list li a:hover {
-        text-decoration: underline;
+      text-decoration: underline;
     }
 
     .anime-list li.active {
-        color: #00ffea;
+      color: #0f0;
     }
 
     .anime-list li.inactive {
-        color: #555;
-        pointer-events: none;
+      color: #555;
+      pointer-events: none;
     }
 
     .anime-list li:hover {
-        transform: scale(1.05);
-    }
-
-    .globe-container {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 80px;
-        height: 80px;
-        animation: spin 20s linear infinite;
-        z-index: 10;
-    }
-
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+      transform: scale(1.05);
     }
 
     footer {
-        margin-top: 20px;
-        padding: 10px 0;
-        background-color: #181818;
-        color: #888;
-        z-index: 1;
-        position: relative;
+      margin-top: 20px;
+      padding: 10px 0;
+      background-color: #181818;
+      color: #888;
     }
 
     footer a {
-        color: #00ffea;
-        text-decoration: none;
-        margin: 0 10px;
+      color: #0f0;
+      text-decoration: none;
+      margin: 0 10px;
     }
 
     footer a:hover {
-        text-decoration: underline;
+      text-decoration: underline;
     }
-</style>
+  </style>
 </head>
-
 <body>
+
+<!-- Preloader -->
 <div id="preloader">
-    <h1 class="preloader-text">Nuel_sama</h1>
+  <h1 class="preloader-text">Nuel_sama</h1>
 </div>
 
-<!-- Rotating Globe -->
-<div class="globe-container">
-    🌎
-</div>
-
+<!-- Main Content -->
 <div class="content">
-    <img src="Founder1.jpg" alt="Nuel_sama" class="profile-pic">
-    <p class="description">Hey there! I'm just having fun creating 2D anime-inspired games in my spare time. Whether it's epic battles, dark curses, or legendary characters, I'm all about bringing anime vibes into gaming. Check out what I've got so far and keep an eye out for new releases!</p>
+  <img src="Founder1.jpg" alt="Nuel_sama" class="profile-pic">
 
-    <h2 class="header">Jujutsu Kaisen</h2>
-    <ul class="anime-list">
-        <li><a href="KC.html" class="active">
-            <img src="suku.png" alt="King of Curses">
-            King of Curses
-        </a></li>
-        <li class="inactive">
-            <img src="gojo.jpg" alt="The Honoured One">
-            The Honoured One
-        </li>
-        <li class="inactive">
-            <img src="mg.jpg" alt="DIVINE SILA GENERAL">
-            DIVERGENT SILA GENERAL
-        </li>
-    </ul>
+  <!-- Self-writing intro -->
+  <p id="typewriter"></p>
 
-    <h2 class="header inactive">Demon Slayer</h2>
-    <p class="description">Prepare to slay demons and uncover dark secrets. Coming soon!</p>
+  <h2 class="header">Jujutsu Kaisen</h2>
+  <ul class="anime-list">
+    <li><a href="KC.html" class="active">
+      <img src="suku.png" alt="King of Curses">
+      King of Curses
+    </a></li>
+    <li class="inactive">
+      <img src="gojo.jpg" alt="The Honoured One">
+      The Honoured One
+    </li>
+    <li class="inactive">
+      <img src="mg.jpg" alt="DIVINE SILA GENERAL">
+      DIVERGENT SILA GENERAL
+    </li>
+  </ul>
 
-    <h2 class="header inactive">Chainsaw Man</h2>
-    <p class="description">Chainsaws and devils collide in this brutal adventure. Stay tuned!</p>
+  <h2 class="header inactive">Demon Slayer</h2>
+  <p class="description">Prepare to slay demons and uncover dark secrets. Coming soon!</p>
 
-    <h2 class="header inactive">Attack on Titan</h2>
-    <p class="description">Fight for humanity's survival against monstrous titans. Coming soon!</p>
+  <h2 class="header inactive">Chainsaw Man</h2>
+  <p class="description">Chainsaws and devils collide in this brutal adventure. Stay tuned!</p>
+
+  <h2 class="header inactive">Attack on Titan</h2>
+  <p class="description">Fight for humanity's survival against monstrous titans. Coming soon!</p>
 </div>
 
+<!-- Footer -->
 <footer>
-    <p>Connect with me:</p>
-    <a href="https://x.com/Nostalgic_Nuel " target="_blank">X (Twitter)</a> |
-    <a href=" https://github.com/Nozel-silva" target="_blank">GitHub</a> |
-    <a href=" https://www.linkedin.com/in/emmanuel-agafie-5983b41b5?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">LinkedIn</a>
+  <p>Connect with me:</p>
+  <a href="https://x.com/Nostalgic_Nuel" target="_blank">X (Twitter)</a> |
+  <a href="https://github.com/Nozel-silva" target="_blank">GitHub</a> |
+  <a href="https://www.linkedin.com/in/emmanuel-agafie-5983b41b5" target="_blank">LinkedIn</a>
 </footer>
 
+<!-- Preloader and Typewriter Script -->
 <script>
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            const preloader = document.getElementById('preloader');
-            preloader.classList.add('hide-preloader');
-            document.body.style.overflow = 'auto';
-        }, 2000);
-    });
+  const text = "Hey there! I'm just having fun creating 2D anime-inspired games in my spare time. Whether it's epic battles, dark curses, or legendary characters, I'm all about bringing anime vibes into gaming. Check out what I've got so far and keep an eye out for new releases!";
+  let i = 0;
+
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById("typewriter").textContent += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, 25); // speed of typing
+    }
+  }
+
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('preloader').classList.add('hide-preloader');
+      document.body.style.overflow = 'auto';
+      typeWriter(); // Start typing
+    }, 2000);
+  });
 </script>
+
 </body>
 </html>
+ 
