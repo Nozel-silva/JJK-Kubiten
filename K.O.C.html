@@ -39,19 +39,27 @@
     }
 
     #top-box {
-      position: fixed;
-      top: 60px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 50px;
-      height: 50px;
-      background-image: url('your-image.png');
-      background-size: cover;
-      background-position: center;
-      border: 2px solid white;
-      border-radius: 10px;
-      z-index: 5;
-    }
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  background-image: url('your-image.png');
+  background-size: cover;
+  background-position: center;
+  border: 2px solid white;
+  border-radius: 10px;
+  z-index: 5;
+  background-color: rgba(255, 255, 255, 0.2); /* Add this */
+  transition: background 0.3s ease-in-out;     /* Smooth background flash */
+}
+
+#top-box.hit {
+  animation: flashHit 0.4s;
+}
+
+
 
     #top-health-bar-container {
       position: fixed;
@@ -182,6 +190,14 @@
       height: 60vh;
       background: white;
     }
+@keyframes pulseRestore {
+  0% { box-shadow: 0 0 10px blue; }
+  100% { box-shadow: 0 0 0 transparent; }
+}
+
+#top-health-bar.restore {
+  animation: pulseRestore 0.5s;
+}
 
     .cube {
       position: absolute;
@@ -190,6 +206,9 @@
       background: grey;
       border-radius: 4px;
     }
+
+
+
 
     #target-box.hit {
       animation: flashHit 0.4s;
@@ -270,11 +289,82 @@
     let score = 0, timeLeft = 180, health = 100;
     let canClick = true, paused = false, gameOver = false, gameInterval, timerInterval;
 
-    function updateScore(points) {
-      score += points;
-      document.getElementById('score').textContent = score;
-      if (score >= 3000) endGame("win");
+let topBoxHealth = 100;
+
+// Regenerate top box health to 100% every 5 seconds
+setInterval(() => {
+  if (!paused && !gameOver) {
+    topBoxHealth = 100;
+    const topBar = document.getElementById("top-health-bar");
+    topBar.style.transition = "width 0.3s ease-in-out";
+    topBar.style.width = "100%";
+    topBar.classList.add("restore");
+    setTimeout(() => topBar.classList.remove("restore"), 100);
+  }
+}, 10000);
+
+function checkCollision(cube, interval) {
+  document.querySelectorAll(".slash, .special-slash").forEach(slash => {
+    const cubeRect = cube.getBoundingClientRect();
+    const slashRect = slash.getBoundingClientRect();
+
+    if (
+      cubeRect.right > slashRect.left &&
+      cubeRect.left < slashRect.right &&
+      cubeRect.bottom > slashRect.top &&
+      cubeRect.top < slashRect.bottom
+    ) {
+      clearInterval(interval);
+      createExplosion(cube.offsetLeft, cube.offsetTop);
+      cube.style.background = "white";
+      cube.style.transition = "transform 0.3s, opacity 0.3s";
+      cube.style.transform = "scale(1.5) rotate(720deg)";
+      cube.style.opacity = "0";
+      setTimeout(() => cube.remove(), 300);
+      updateScore(2);
     }
+
+    // 🔽 Top box slash detection
+    const topBox = document.getElementById("top-box");
+    const topRect = topBox.getBoundingClientRect();
+    if (
+      slashRect.right > topRect.left &&
+      slashRect.left < topRect.right &&
+      slashRect.bottom > topRect.top &&
+      slashRect.top < topRect.bottom
+    ) {
+      reduceTopBoxHealth(0.1);
+    }
+  });
+}
+function reduceTopBoxHealth(amount = 0.1) {
+  if (gameOver) return;
+
+  topBoxHealth -= amount;
+  if (topBoxHealth < 0) topBoxHealth = 0;
+
+  const topBar = document.getElementById("top-health-bar");
+  topBar.style.transition = "width 0.4s ease-in-out";
+  topBar.style.width = `${topBoxHealth}%`;
+
+  const topBox = document.getElementById("top-box");
+  topBox.classList.add("hit");
+  setTimeout(() => topBox.classList.remove("hit"), 400);
+
+  if (topBoxHealth <= 0) {
+    gameOver = true;
+    document.getElementById("bgMusic").pause();
+    document.getElementById("winPopup").style.display = "block";
+    alert("You have subdued Mahoraga.");
+  }
+}
+
+
+    function updateScore(points) {
+  score += points;
+  document.getElementById('score').textContent = score;
+}
+
 
     function updateTimer() {
       timerInterval = setInterval(() => {
@@ -346,27 +436,45 @@
     }
 
     function checkCollision(cube, interval) {
-      document.querySelectorAll(".slash, .special-slash").forEach(slash => {
-        const cubeRect = cube.getBoundingClientRect();
-        const slashRect = slash.getBoundingClientRect();
+  document.querySelectorAll(".slash, .special-slash").forEach(slash => {
+    const cubeRect = cube.getBoundingClientRect();
+    const slashRect = slash.getBoundingClientRect();
 
-        if (
-          cubeRect.right > slashRect.left &&
-          cubeRect.left < slashRect.right &&
-          cubeRect.bottom > slashRect.top &&
-          cubeRect.top < slashRect.bottom
-        ) {
-          clearInterval(interval);
-          createExplosion(cube.offsetLeft, cube.offsetTop);
-          cube.style.background = "white";
-          cube.style.transition = "transform 0.3s, opacity 0.3s";
-          cube.style.transform = "scale(1.5) rotate(720deg)";
-          cube.style.opacity = "0";
-          setTimeout(() => cube.remove(), 300);
-          updateScore(2);
-        }
-      });
+    // SLASH vs CUBE
+    if (
+      cubeRect.right > slashRect.left &&
+      cubeRect.left < slashRect.right &&
+      cubeRect.bottom > slashRect.top &&
+      cubeRect.top < slashRect.bottom
+    ) {
+      clearInterval(interval);
+      createExplosion(cube.offsetLeft, cube.offsetTop);
+      cube.style.background = "white";
+      cube.style.transition = "transform 0.3s, opacity 0.3s";
+      cube.style.transform = "scale(1.5) rotate(720deg)";
+      cube.style.opacity = "0";
+      setTimeout(() => cube.remove(), 300);
+      updateScore(2);
     }
+  });
+
+  // ✅ NEW: SLASH HITS TOP BOX
+  const topBox = document.getElementById("top-box");
+  const topRect = topBox.getBoundingClientRect();
+
+  document.querySelectorAll(".slash, .special-slash").forEach(slash => {
+    const slashRect = slash.getBoundingClientRect();
+    if (
+      slashRect.right > topRect.left &&
+      slashRect.left < topRect.right &&
+      slashRect.bottom > topRect.top &&
+      slashRect.top < topRect.bottom
+    ) {
+      reduceTopBoxHealth(); // ✅ Reduce 5%
+    }
+  });
+}
+
 
     function checkBoxHit(cube, interval) {
       const cubeRect = cube.getBoundingClientRect();
@@ -540,3 +648,4 @@
   </script>
 </body>
 </html>
+ 
