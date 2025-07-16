@@ -646,15 +646,26 @@ function reduceTopBoxHealth(amount = 0.1) {
       }
     }
 
-        function endGame(result) {
-  gameOver = true;
+        function checkGameOverUIState() {
+  const isPopupActive = [...document.querySelectorAll('.popup')]
+    .some(popup => getComputedStyle(popup).display !== 'none');
 
-  clearInterval(gameInterval);  // stops cube spawning
-  clearInterval(timerInterval); // stops timer
+  if (isPopupActive) {
+    gameOver = true;
 
-  document.getElementById("bgMusic").pause(); // stops background music
+    // Stop all intervals
+    clearInterval(gameInterval);
+    clearInterval(timerInterval);
 
-  document.getElementById(result === "win" ? "winPopup" : "losePopup").style.display = "block";
+    // Pause background music
+    const music = document.getElementById("bgMusic");
+    music.pause();
+
+    // Disable buttons
+    document.querySelector(".trigger-btn").disabled = true;
+    document.querySelector(".special-btn").disabled = true;
+    document.getElementById("pause-btn").disabled = true;
+  }
         }
     
   </script>
