@@ -645,6 +645,18 @@ function reduceTopBoxHealth(amount = 0.1) {
         }, 100);
       }
     }
+
+        function endGame(result) {
+  gameOver = true;
+
+  clearInterval(gameInterval);  // stops cube spawning
+  clearInterval(timerInterval); // stops timer
+
+  document.getElementById("bgMusic").pause(); // stops background music
+
+  document.getElementById(result === "win" ? "winPopup" : "losePopup").style.display = "block";
+        }
+    
   </script>
 </body>
 </html>
