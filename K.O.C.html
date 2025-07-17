@@ -286,12 +286,14 @@
   <audio id="slashSound" src="domain-expansion-sukuna.mp3"></audio>
 
   <script>
-    let score = 0, timeLeft = 180, health = 100;
-    let canClick = true, paused = false, gameOver = false, gameInterval, timerInterval;
+    
 
+    
+      let score = 0, timeLeft = 180, health = 100;
+let canClick = true, paused = false, gameOver = false, gameInterval, timerInterval;
 let topBoxHealth = 100;
 
-// Regenerate top box health to 100% every 5 seconds
+// Regenerate top box health to 100% every 10 seconds
 setInterval(() => {
   if (!paused && !gameOver) {
     topBoxHealth = 100;
@@ -302,6 +304,102 @@ setInterval(() => {
     setTimeout(() => topBar.classList.remove("restore"), 100);
   }
 }, 10000);
+
+function reduceTopBoxHealth(amount = 5) {
+  if (gameOver) return;
+
+  topBoxHealth -= amount;
+  if (topBoxHealth < 0) topBoxHealth = 0;
+
+  const topBar = document.getElementById("top-health-bar");
+  topBar.style.transition = "width 0.4s ease-in-out";
+  topBar.style.width = `${topBoxHealth}%`;
+
+  const topBox = document.getElementById("top-box");
+  topBox.classList.add("hit");
+  setTimeout(() => topBox.classList.remove("hit"), 400);
+
+  if (topBoxHealth <= 0) {
+    gameOver = true;
+    document.getElementById("bgMusic").pause();
+    document.getElementById("winPopup").style.display = "block";
+    alert("You have subdued Mahoraga.");
+  }
+}
+
+function updateScore(points) {
+  score += points;
+  document.getElementById('score').textContent = score;
+}
+
+function updateTimer() {
+  timerInterval = setInterval(() => {
+    if (!paused) {
+      timeLeft--;
+      document.getElementById('timer').textContent = timeLeft;
+      if (timeLeft <= 0) endGame("lose");
+    }
+  }, 1000);
+}
+
+function endGame(result) {
+  clearInterval(gameInterval);
+  clearInterval(timerInterval);
+  document.getElementById("bgMusic").pause();
+  document.getElementById(result === "win" ? "winPopup" : "losePopup").style.display = "block";
+}
+
+function startGame() {
+  document.getElementById('startPopup').style.display = 'none';
+  document.getElementById("bgMusic").volume = 0.2;
+  document.getElementById("bgMusic").play();
+  updateTimer();
+
+  gameInterval = setInterval(() => {
+    if (!paused) for (let i = 0; i < 7; i++) createCube();
+  }, 2000);
+
+  setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
+
+  // Start random top box attack loop
+  setInterval(() => {
+    if (!paused && !gameOver) topBoxAttack();
+  }, 12000);
+}
+
+function createCube() {
+  const cube = document.createElement("div");
+  cube.classList.add("cube");
+  document.body.appendChild(cube);
+
+  const box = document.getElementById("target-box");
+  const boxRect = box.getBoundingClientRect();
+
+  cube.style.left = `${Math.random() * window.innerWidth}px`;
+  cube.style.top = "-20px";
+
+  let fallSpeed = Math.random() * 3 + 5;
+  let fallInterval = setInterval(() => {
+    if (paused || gameOver) return;
+
+    const cubeRect = cube.getBoundingClientRect();
+    const dx = boxRect.left + boxRect.width/2 - (cubeRect.left + cubeRect.width/2);
+    const dy = boxRect.top + boxRect.height/2 - (cubeRect.top + cubeRect.height/2);
+    const angle = Math.atan2(dy, dx);
+
+    cube.style.left = `${cube.offsetLeft + Math.cos(angle) * fallSpeed}px`;
+    cube.style.top = `${cube.offsetTop + Math.sin(angle) * fallSpeed}px`;
+
+    if (cube.offsetTop > window.innerHeight) {
+      updateScore(-1);
+      clearInterval(fallInterval);
+      cube.remove();
+    }
+
+    checkCollision(cube, fallInterval);
+    checkBoxHit(cube, fallInterval);
+  }, 20);
+}
 
 function checkCollision(cube, interval) {
   document.querySelectorAll(".slash, .special-slash").forEach(slash => {
@@ -324,7 +422,6 @@ function checkCollision(cube, interval) {
       updateScore(2);
     }
 
-    // 🔽 Top box slash detection
     const topBox = document.getElementById("top-box");
     const topRect = topBox.getBoundingClientRect();
     if (
@@ -333,342 +430,201 @@ function checkCollision(cube, interval) {
       slashRect.bottom > topRect.top &&
       slashRect.top < topRect.bottom
     ) {
-      reduceTopBoxHealth(0.1);
+      reduceTopBoxHealth(5); // Slash removes 5%
     }
   });
 }
-function reduceTopBoxHealth(amount = 0.1) {
-  if (gameOver) return;
 
-  topBoxHealth -= amount;
-  if (topBoxHealth < 0) topBoxHealth = 0;
+function checkBoxHit(cube, interval) {
+  const cubeRect = cube.getBoundingClientRect();
+  const box = document.getElementById("target-box");
+  const boxRect = box.getBoundingClientRect();
 
-  const topBar = document.getElementById("top-health-bar");
-  topBar.style.transition = "width 0.4s ease-in-out";
-  topBar.style.width = `${topBoxHealth}%`;
-
-  const topBox = document.getElementById("top-box");
-  topBox.classList.add("hit");
-  setTimeout(() => topBox.classList.remove("hit"), 400);
-
-  if (topBoxHealth <= 0) {
-    gameOver = true;
-    document.getElementById("bgMusic").pause();
-    document.getElementById("winPopup").style.display = "block";
-    alert("You have subdued Mahoraga.");
+  if (
+    cubeRect.right > boxRect.left &&
+    cubeRect.left < boxRect.right &&
+    cubeRect.bottom > boxRect.top &&
+    cubeRect.top < boxRect.bottom
+  ) {
+    clearInterval(interval);
+    createExplosion(cube.offsetLeft, cube.offsetTop);
+    cube.remove();
+    reduceHealth();
   }
 }
 
+function reduceHealth() {
+  if (gameOver) return;
 
-    function updateScore(points) {
-  score += points;
-  document.getElementById('score').textContent = score;
+  health -= 10;
+  if (health < 0) health = 0;
+
+  document.getElementById("health-bar").style.width = `${health}%`;
+  const box = document.getElementById("target-box");
+  box.classList.add("hit");
+  setTimeout(() => box.classList.remove("hit"), 400);
+
+  if (health <= 0) {
+    gameOver = true;
+    document.getElementById("bgMusic").pause();
+    setTimeout(() => {
+      alert("Game Over! You lose.");
+      location.reload();
+    }, 100);
+  }
 }
 
+function startSlashing() {
+  if (!canClick || paused || gameOver) return;
+  canClick = false;
+  const audio = document.getElementById("slashSound");
+  audio.play();
 
-    function updateTimer() {
-      timerInterval = setInterval(() => {
-        if (!paused) {
-          timeLeft--;
-          document.getElementById('timer').textContent = timeLeft;
-          if (timeLeft <= 0) endGame("lose");
-        }
-      }, 1000);
+  const interval = setInterval(() => {
+    if (!paused) {
+      for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
     }
+  }, 100);
 
-    function endGame(result) {
-      clearInterval(gameInterval);
-      clearInterval(timerInterval);
-      document.getElementById("bgMusic").pause();
-      document.getElementById(result === "win" ? "winPopup" : "losePopup").style.display = "block";
-    }
+  setTimeout(() => {
+    clearInterval(interval);
+    setTimeout(() => {
+      if (!paused) {
+        canClick = true;
+        document.querySelector(".trigger-btn").disabled = false;
+      }
+    }, 20000);
+  }, 10000);
+}
 
-    function startGame() {
-      document.getElementById('startPopup').style.display = 'none';
-      document.getElementById("bgMusic").volume = 0.2;
-      document.getElementById("bgMusic").play();
-      updateTimer();
+function createSlash(isTopHeavy) {
+  const slash = document.createElement("div");
+  slash.classList.add("slash");
+  document.body.appendChild(slash);
 
-      gameInterval = setInterval(() => {
-        if (!paused) for (let i = 0; i < 7; i++) createCube();
-      }, 2000);
+  const x = Math.random() * window.innerWidth;
+  const y = isTopHeavy ? Math.random() * (window.innerHeight * 0.3) : Math.random() * window.innerHeight;
+  slash.style.left = `${x}px`;
+  slash.style.top = `${y}px`;
+  slash.style.transform = `rotate(${Math.random() * 360}deg)`;
 
-      setTimeout(() => document.querySelector('.trigger-btn').disabled = false, 20000);
+  setTimeout(() => slash.style.opacity = 1, 50);
+  setTimeout(() => {
+    slash.style.opacity = 0;
+    setTimeout(() => slash.remove(), 500);
+  }, 500);
+}
 
-      // Start random top box attack loop
-      setInterval(() => {
-        if (!paused && !gameOver) topBoxAttack();
-      }, 12000);
-    }
+function specialSlash() {
+  if (paused || gameOver) return;
+  const audio = document.getElementById("disectSound");
+  audio.play();
 
-    function createCube() {
-      const cube = document.createElement("div");
-      cube.classList.add("cube");
-      document.body.appendChild(cube);
+  for (let i = 0; i < 3; i++) {
+    const slash = document.createElement("div");
+    slash.classList.add("special-slash");
+    document.body.appendChild(slash);
 
-      const box = document.getElementById("target-box");
-      const boxRect = box.getBoundingClientRect();
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight;
+    slash.style.left = `${x}px`;
+    slash.style.top = `${y}px`;
+    slash.style.transform = `rotate(${Math.random() * 360}deg)`;
 
-      cube.style.left = `${Math.random() * window.innerWidth}px`;
-      cube.style.top = "-20px";
+    setTimeout(() => slash.style.opacity = 1, 100);
+    setTimeout(() => {
+      slash.style.opacity = 0;
+      setTimeout(() => slash.remove(), 500);
+    }, 700);
+  }
+}
 
-      let fallSpeed = Math.random() * 3 + 5;
-      let fallInterval = setInterval(() => {
-        if (paused) return;
+function togglePause() {
+  paused = !paused;
+  document.getElementById("pause-btn").innerText = paused ? "Resume" : "Pause";
+  const music = document.getElementById("bgMusic");
+  paused ? music.pause() : music.play();
+  document.querySelector(".trigger-btn").disabled = paused || !canClick;
+  document.querySelector(".special-btn").disabled = paused;
+}
 
-        const cubeRect = cube.getBoundingClientRect();
-        const dx = boxRect.left + boxRect.width/2 - (cubeRect.left + cubeRect.width/2);
-        const dy = boxRect.top + boxRect.height/2 - (cubeRect.top + cubeRect.height/2);
-        const angle = Math.atan2(dy, dx);
+function createExplosion(x, y) {
+  for (let i = 0; i < 5; i++) {
+    const particle = document.createElement("div");
+    particle.classList.add("explosion");
+    document.body.appendChild(particle);
 
-        cube.style.left = `${cube.offsetLeft + Math.cos(angle) * fallSpeed}px`;
-        cube.style.top = `${cube.offsetTop + Math.sin(angle) * fallSpeed}px`;
+    const offsetX = (Math.random() - 0.5) * 20;
+    const offsetY = (Math.random() - 0.5) * 20;
+    particle.style.left = `${x + offsetX}px`;
+    particle.style.top = `${y + offsetY}px`;
+    setTimeout(() => particle.remove(), 500);
+  }
+}
 
-        if (cube.offsetTop > window.innerHeight) {
-          updateScore(-1);
-          clearInterval(fallInterval);
-          cube.remove();
-        }
-
-        checkCollision(cube, fallInterval);
-        checkBoxHit(cube, fallInterval);
-      }, 20);
-    }
-
-    function checkCollision(cube, interval) {
-  document.querySelectorAll(".slash, .special-slash").forEach(slash => {
-    const cubeRect = cube.getBoundingClientRect();
-    const slashRect = slash.getBoundingClientRect();
-
-    // SLASH vs CUBE
-    if (
-      cubeRect.right > slashRect.left &&
-      cubeRect.left < slashRect.right &&
-      cubeRect.bottom > slashRect.top &&
-      cubeRect.top < slashRect.bottom
-    ) {
-      clearInterval(interval);
-      createExplosion(cube.offsetLeft, cube.offsetTop);
-      cube.style.background = "white";
-      cube.style.transition = "transform 0.3s, opacity 0.3s";
-      cube.style.transform = "scale(1.5) rotate(720deg)";
-      cube.style.opacity = "0";
-      setTimeout(() => cube.remove(), 300);
-      updateScore(2);
-    }
-  });
-
-  // ✅ NEW: SLASH HITS TOP BOX
+function topBoxAttack() {
   const topBox = document.getElementById("top-box");
-  const topRect = topBox.getBoundingClientRect();
+  const bottomBox = document.getElementById("target-box");
+  let attackCount = 0;
 
-  document.querySelectorAll(".slash, .special-slash").forEach(slash => {
-    const slashRect = slash.getBoundingClientRect();
-    if (
-      slashRect.right > topRect.left &&
-      slashRect.left < topRect.right &&
-      slashRect.bottom > topRect.top &&
-      slashRect.top < topRect.bottom
-    ) {
-      reduceTopBoxHealth(); // ✅ Reduce 5%
+  const attackInterval = setInterval(() => {
+    if (paused || gameOver || attackCount >= 3) {
+      topBox.style.top = '60px';
+      clearInterval(attackInterval);
+      return;
     }
-  });
+
+    topBox.style.transition = "top 0.3s ease-in-out";
+    topBox.style.top = `${window.innerHeight - 100}px`;
+
+    setTimeout(() => {
+      topBox.style.top = '60px';
+      reduceHealthBy(4);
+      attackCount++;
+    }, 300);
+  }, 800);
 }
 
+function reduceHealthBy(amount) {
+  if (gameOver) return;
+  health -= amount;
+  if (health < 0) health = 0;
+  document.getElementById("health-bar").style.width = `${health}%`;
 
-    function checkBoxHit(cube, interval) {
-      const cubeRect = cube.getBoundingClientRect();
-      const box = document.getElementById("target-box");
-      const boxRect = box.getBoundingClientRect();
+  const box = document.getElementById("target-box");
+  box.classList.add("hit");
+  setTimeout(() => box.classList.remove("hit"), 400);
 
-      if (
-        cubeRect.right > boxRect.left &&
-        cubeRect.left < boxRect.right &&
-        cubeRect.bottom > boxRect.top &&
-        cubeRect.top < boxRect.bottom
-      ) {
-        clearInterval(interval);
-        createExplosion(cube.offsetLeft, cube.offsetTop);
-        cube.remove();
-        reduceHealth();
-      }
-    }
+  if (health <= 0) {
+    gameOver = true;
+    document.getElementById("bgMusic").pause();
+    setTimeout(() => {
+      alert("Game Over! You lose.");
+      location.reload();
+    }, 100);
+  }
+}
 
-    function reduceHealth() {
-      if (gameOver) return;
-
-      health -= 10;
-      if (health < 0) health = 0;
-
-      document.getElementById("health-bar").style.width = `${health}%`;
-      const box = document.getElementById("target-box");
-      box.classList.add("hit");
-      setTimeout(() => box.classList.remove("hit"), 400);
-
-      if (health <= 0) {
-        gameOver = true;
-        document.getElementById("bgMusic").pause();
-        setTimeout(() => {
-          alert("Game Over! You lose.");
-          location.reload();
-        }, 100);
-      }
-    }
-
-    function startSlashing() {
-      if (!canClick || paused) return;
-      canClick = false;
-      const audio = document.getElementById("slashSound");
-      audio.play();
-
-      const interval = setInterval(() => {
-        if (!paused) {
-          for (let i = 0; i < 6; i++) createSlash(Math.random() < 0.8);
-        }
-      }, 100);
-
-      setTimeout(() => {
-        clearInterval(interval);
-        setTimeout(() => {
-          if (!paused) {
-            canClick = true;
-            document.querySelector(".trigger-btn").disabled = false;
-          }
-        }, 20000);
-      }, 10000);
-    }
-
-    function createSlash(isTopHeavy) {
-      const slash = document.createElement("div");
-      slash.classList.add("slash");
-      document.body.appendChild(slash);
-
-      const x = Math.random() * window.innerWidth;
-      const y = isTopHeavy ? Math.random() * (window.innerHeight * 0.3) : Math.random() * window.innerHeight;
-      slash.style.left = `${x}px`;
-      slash.style.top = `${y}px`;
-      slash.style.transform = `rotate(${Math.random() * 360}deg)`;
-
-      setTimeout(() => slash.style.opacity = 1, 50);
-      setTimeout(() => {
-        slash.style.opacity = 0;
-        setTimeout(() => slash.remove(), 500);
-      }, 500);
-    }
-
-    function specialSlash() {
-      if (paused) return;
-      const audio = document.getElementById("disectSound");
-      audio.play();
-
-      for (let i = 0; i < 3; i++) {
-        const slash = document.createElement("div");
-        slash.classList.add("special-slash");
-        document.body.appendChild(slash);
-
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * window.innerHeight;
-        slash.style.left = `${x}px`;
-        slash.style.top = `${y}px`;
-        slash.style.transform = `rotate(${Math.random() * 360}deg)`;
-
-        setTimeout(() => slash.style.opacity = 1, 100);
-        setTimeout(() => {
-          slash.style.opacity = 0;
-          setTimeout(() => slash.remove(), 500);
-        }, 700);
-      }
-    }
-
-    function togglePause() {
-      paused = !paused;
-      document.getElementById("pause-btn").innerText = paused ? "Resume" : "Pause";
-      const music = document.getElementById("bgMusic");
-      paused ? music.pause() : music.play();
-      document.querySelector(".trigger-btn").disabled = paused || !canClick;
-      document.querySelector(".special-btn").disabled = paused;
-    }
-
-    function createExplosion(x, y) {
-      for (let i = 0; i < 5; i++) {
-        const particle = document.createElement("div");
-        particle.classList.add("explosion");
-        document.body.appendChild(particle);
-
-        const offsetX = (Math.random() - 0.5) * 20;
-        const offsetY = (Math.random() - 0.5) * 20;
-        particle.style.left = `${x + offsetX}px`;
-        particle.style.top = `${y + offsetY}px`;
-        setTimeout(() => particle.remove(), 500);
-      }
-    }
-
-    function topBoxAttack() {
-      const topBox = document.getElementById("top-box");
-      const bottomBox = document.getElementById("target-box");
-      let attackCount = 0;
-
-      const attackInterval = setInterval(() => {
-        if (paused || gameOver || attackCount >= 3) {
-          topBox.style.top = '60px';
-          clearInterval(attackInterval);
-          return;
-        }
-
-        topBox.style.transition = "top 0.3s ease-in-out";
-        topBox.style.top = `${window.innerHeight - 100}px`;
-
-        setTimeout(() => {
-          topBox.style.top = '60px';
-          reduceHealthBy(4);
-          attackCount++;
-        }, 300);
-      }, 800);
-    }
-
-    function reduceHealthBy(amount) {
-      if (gameOver) return;
-      health -= amount;
-      if (health < 0) health = 0;
-      document.getElementById("health-bar").style.width = `${health}%`;
-
-      const box = document.getElementById("target-box");
-      box.classList.add("hit");
-      setTimeout(() => box.classList.remove("hit"), 400);
-
-      if (health <= 0) {
-        gameOver = true;
-        document.getElementById("bgMusic").pause();
-        setTimeout(() => {
-          alert("Game Over! You lose.");
-          location.reload();
-        }, 100);
-      }
-    }
-
-        function checkGameOverUIState() {
+function checkGameOverUIState() {
   const isPopupActive = [...document.querySelectorAll('.popup')]
     .some(popup => getComputedStyle(popup).display !== 'none');
 
   if (isPopupActive) {
     gameOver = true;
-
-    // Stop all intervals
     clearInterval(gameInterval);
     clearInterval(timerInterval);
-
-    // Pause background music
-    const music = document.getElementById("bgMusic");
-    music.pause();
-
-    // Disable buttons
+    document.getElementById("bgMusic").pause();
     document.querySelector(".trigger-btn").disabled = true;
     document.querySelector(".special-btn").disabled = true;
     document.getElementById("pause-btn").disabled = true;
   }
-        }
+}
+
+setInterval(checkGameOverUIState, 500);
+
     
   </script>
 </body>
 </html>
- 
+
+  
