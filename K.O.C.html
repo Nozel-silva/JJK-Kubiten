@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -557,28 +557,32 @@ function reduceTopBoxHealth(amount = 0.04) {
     }
 
     function specialSlash() {
-      if (paused) return;
-      const audio = document.getElementById("disectSound");
-      audio.play();
+  if (paused) return;
 
-      for (let i = 0; i < 3; i++) {
-        const slash = document.createElement("div");
-        slash.classList.add("special-slash");
-        document.body.appendChild(slash);
+  // Play dissect sound from the start every time it's clicked
+  const originalAudio = document.getElementById("disectSound");
+  const audio = originalAudio.cloneNode(); // allows overlap
+  audio.play();
 
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * window.innerHeight;
-        slash.style.left = `${x}px`;
-        slash.style.top = `${y}px`;
-        slash.style.transform = `rotate(${Math.random() * 360}deg)`;
+  for (let i = 0; i < 3; i++) {
+    const slash = document.createElement("div");
+    slash.classList.add("special-slash");
+    document.body.appendChild(slash);
 
-        setTimeout(() => slash.style.opacity = 1, 100);
-        setTimeout(() => {
-          slash.style.opacity = 0;
-          setTimeout(() => slash.remove(), 500);
-        }, 700);
-      }
-    }
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight;
+    slash.style.left = `${x}px`;
+    slash.style.top = `${y}px`;
+    slash.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+    setTimeout(() => slash.style.opacity = 1, 100);
+    setTimeout(() => {
+      slash.style.opacity = 0;
+      setTimeout(() => slash.remove(), 500);
+    }, 700);
+  }
+}
+
 
     function togglePause() {
       paused = !paused;
@@ -672,3 +676,4 @@ function reduceTopBoxHealth(amount = 0.04) {
   </script>
 </body>
 </html>
+ 
