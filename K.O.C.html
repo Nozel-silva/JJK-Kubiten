@@ -385,7 +385,7 @@ function reduceTopBoxHealth(amount = 0.04) {
 
     function startGame() {
       document.getElementById('startPopup').style.display = 'none';
-      document.getElementById("bgMusic").volume = 0.2;
+      document.getElementById("bgMusic").volume = 0.1;
       document.getElementById("bgMusic").play();
       updateTimer();
 
@@ -531,6 +531,7 @@ function reduceTopBoxHealth(amount = 0.04) {
       if (!canClick || paused) return;
       canClick = false;
       const audio = document.getElementById("slashSound");
+audio.volume = 0.4; 
       audio.play();
 
       const interval = setInterval(() => {
@@ -574,6 +575,7 @@ function reduceTopBoxHealth(amount = 0.04) {
   // Play dissect sound from the start every time it's clicked
   const originalAudio = document.getElementById("disectSound");
   const audio = originalAudio.cloneNode(); // allows overlap
+audio.volume = 0.05; 
   audio.play();
 
   for (let i = 0; i < 3; i++) {
@@ -688,5 +690,6 @@ function reduceTopBoxHealth(amount = 0.04) {
   </script>
 </body>
 </html>
+
 
    
