@@ -333,11 +333,11 @@ function checkCollision(cube, interval) {
       slashRect.bottom > topRect.top &&
       slashRect.top < topRect.bottom
     ) {
-      reduceTopBoxHealth(0.1);
+      reduceTopBoxHealth(0.04);
     }
   });
 }
-function reduceTopBoxHealth(amount = 0.1) {
+function reduceTopBoxHealth(amount = 0.04) {
   if (gameOver) return;
 
   topBoxHealth -= amount;
