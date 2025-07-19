@@ -402,38 +402,50 @@ function reduceTopBoxHealth(amount = 0.04) {
     }
 
     function createCube() {
-      const cube = document.createElement("div");
-      cube.classList.add("cube");
-      document.body.appendChild(cube);
+  const cube = document.createElement("div");
+  cube.classList.add("cube");
 
-      const box = document.getElementById("target-box");
-      const boxRect = box.getBoundingClientRect();
+  // 20% chance to show an emoji instead of a normal cube
+  const isEmoji = Math.random() < 0.2;
+  if (isEmoji) {
+    cube.textContent = Math.random() < 0.5 ? "🚔" : "🛩️";
+    cube.style.fontSize = "20px";
+    cube.style.display = "flex";
+    cube.style.justifyContent = "center";
+    cube.style.alignItems = "center";
+    cube.style.background = "transparent";
+  }
 
-      cube.style.left = `${Math.random() * window.innerWidth}px`;
-      cube.style.top = "-20px";
+  document.body.appendChild(cube);
 
-      let fallSpeed = Math.random() * 3 + 5;
-      let fallInterval = setInterval(() => {
-        if (paused) return;
+  const box = document.getElementById("target-box");
+  const boxRect = box.getBoundingClientRect();
 
-        const cubeRect = cube.getBoundingClientRect();
-        const dx = boxRect.left + boxRect.width/2 - (cubeRect.left + cubeRect.width/2);
-        const dy = boxRect.top + boxRect.height/2 - (cubeRect.top + cubeRect.height/2);
-        const angle = Math.atan2(dy, dx);
+  cube.style.left = `${Math.random() * window.innerWidth}px`;
+  cube.style.top = "-20px";
 
-        cube.style.left = `${cube.offsetLeft + Math.cos(angle) * fallSpeed}px`;
-        cube.style.top = `${cube.offsetTop + Math.sin(angle) * fallSpeed}px`;
+  let fallSpeed = Math.random() * 3 + 5;
+  let fallInterval = setInterval(() => {
+    if (paused) return;
 
-        if (cube.offsetTop > window.innerHeight) {
-          updateScore(-1);
-          clearInterval(fallInterval);
-          cube.remove();
-        }
+    const cubeRect = cube.getBoundingClientRect();
+    const dx = boxRect.left + boxRect.width/2 - (cubeRect.left + cubeRect.width/2);
+    const dy = boxRect.top + boxRect.height/2 - (cubeRect.top + cubeRect.height/2);
+    const angle = Math.atan2(dy, dx);
 
-        checkCollision(cube, fallInterval);
-        checkBoxHit(cube, fallInterval);
-      }, 20);
-    }
+    cube.style.left = `${cube.offsetLeft + Math.cos(angle) * fallSpeed}px`;
+    cube.style.top = `${cube.offsetTop + Math.sin(angle) * fallSpeed}px`;
+
+    if (cube.offsetTop > window.innerHeight) {
+      updateScore(-1);
+      clearInterval(fallInterval);
+      cube.remove();
+    }
+
+    checkCollision(cube, fallInterval);
+    checkBoxHit(cube, fallInterval);
+  }, 20);
+}
 
     function checkCollision(cube, interval) {
   document.querySelectorAll(".slash, .special-slash").forEach(slash => {
@@ -676,4 +688,5 @@ function reduceTopBoxHealth(amount = 0.04) {
   </script>
 </body>
 </html>
- 
+
+   
