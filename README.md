@@ -16,7 +16,7 @@ This project focuses on **game mechanics, animations, collision detection, and r
 ---
 
 ## 🚀 Live Demo
-👉 https://your-live-demo-link-here  
+👉  https://nozel-silva.github.io/JJK-Kubiten/KC.html
 *(Replace with your deployed game link)*
 
 ---
