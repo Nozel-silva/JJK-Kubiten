@@ -4,11 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Anime Games by Nuel_sama</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Righteous&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #121212;
+      background-color: #0a0a0a;
+      background-image: url('anime-bg.jpg'); /* Add a subtle anime-themed background image if available */
+      background-size: cover;
+      background-position: center;
       color: #fff;
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
       text-align: center;
@@ -21,7 +25,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: #121212;
+      background-color: rgba(18, 18, 18, 0.95);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -30,29 +34,29 @@
     }
 
     .preloader-text {
-      font-size: 3em;
-      color: #0f0;
-      animation: bounceIn 1.5s ease-out;
+      font-size: 4em;
+      font-family: 'Righteous', cursive;
+      color: #00ff00;
+      text-shadow: 0 0 10px #00ff00;
+      animation: glowPulse 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      from { text-shadow: 0 0 5px #00ff00; }
+      to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
     }
 
     .hide-preloader {
       opacity: 0;
       visibility: hidden;
-      transition: opacity 1s ease-out, visibility 1s ease-out;
-    }
-
-    @keyframes bounceIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      60% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(1); }
     }
 
     .content {
-      max-width: 800px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 40px 20px;
       opacity: 0;
-      animation: fadeIn 1s ease-out forwards;
+      animation: fadeIn 1.5s ease-out forwards;
       animation-delay: 2s;
     }
 
@@ -61,98 +65,132 @@
     }
 
     .header {
-      font-size: 1.8em;
-      margin: 20px 0 10px;
-      transition: color 0.5s;
+      font-size: 2.5em;
+      font-family: 'Righteous', cursive;
+      margin: 40px 0 20px;
+      color: #00ff00;
+      text-shadow: 0 0 10px #00ff00;
+      transition: transform 0.3s, color 0.3s;
     }
 
-    .inactive {
+    .header.inactive {
       color: #555;
+      text-shadow: none;
+    }
+
+    .header:hover {
+      transform: scale(1.05);
     }
 
     .profile-pic {
-      width: 150px;
-      height: 150px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
-      margin: 0 auto 10px;
+      margin: 0 auto 20px;
       display: block;
-      border: 2px solid #0f0;
+      border: 4px solid #00ff00;
+      box-shadow: 0 0 20px #00ff00;
+      transition: transform 0.3s;
     }
 
-    /* Self-Writing Typewriter */
+    .profile-pic:hover {
+      transform: rotate(5deg) scale(1.1);
+    }
+
+    /* Typewriter */
     #typewriter {
-      color: #0f0;
-      font-size: 1em;
+      color: #00ff00;
+      font-size: 1.2em;
       margin: 20px auto;
       white-space: pre-wrap;
-      display: inline-block;
-      border-right: 2px solid #0f0;
+      display: block;
+      border-right: 3px solid #00ff00;
       overflow: hidden;
       animation: blink 0.75s step-end infinite;
+      max-width: 80%;
     }
 
     @keyframes blink {
       50% { border-color: transparent; }
     }
 
+    .anime-section {
+      margin-bottom: 60px;
+    }
+
+    .description {
+      font-size: 1.1em;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
     .anime-list {
       list-style-type: none;
       padding: 0;
-      margin: 0 0 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      justify-items: center;
     }
 
     .anime-list li {
-      margin: 10px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.3s;
-    }
-
-    .anime-list li img {
-      width: 70px;
-      height: 70px;
-      border-radius: 50px;
-      margin-right: 10px;
-    }
-
-    .anime-list li a {
-      text-decoration: none;
-      color: #0f0;
-    }
-
-    .anime-list li a:hover {
-      text-decoration: underline;
-    }
-
-    .anime-list li.active {
-      color: #0f0;
-    }
-
-    .anime-list li.inactive {
-      color: #555;
-      pointer-events: none;
+      background-color: rgba(24, 24, 24, 0.8);
+      border-radius: 15px;
+      padding: 15px;
+      width: 100%;
+      max-width: 300px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
 
     .anime-list li:hover {
-      transform: scale(1.05);
+      transform: translateY(-10px);
+      box-shadow: 0 0 20px #00ff00;
+    }
+
+    .anime-list li img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-right: 15px;
+      border: 2px solid #00ff00;
+    }
+
+    .anime-list li a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+
+    .anime-list li a:hover {
+      color: #00ff00;
+    }
+
+    .anime-list li.inactive {
+      opacity: 0.5;
+      pointer-events: none;
     }
 
     footer {
-      margin-top: 20px;
-      padding: 10px 0;
-      background-color: #181818;
+      margin-top: 40px;
+      padding: 20px 0;
+      background-color: rgba(24, 24, 24, 0.8);
       color: #888;
+      border-top: 1px solid #00ff00;
     }
 
     footer a {
-      color: #0f0;
+      color: #00ff00;
       text-decoration: none;
-      margin: 0 10px;
+      margin: 0 15px;
+      transition: color 0.3s;
     }
 
     footer a:hover {
-      text-decoration: underline;
+      color: #fff;
     }
   </style>
 </head>
@@ -170,34 +208,45 @@
   <!-- Self-writing intro -->
   <p id="typewriter"></p>
 
-  <h2 class="header">Jujutsu Kaisen</h2>
-  <ul class="anime-list">
-    <li><a href="KC.html" class="active">
-      <img src="suku.png" alt="King of Curses">
-      King of Curses
-    </a></li>
-    <li class="inactive">
-      <img src="gojo.jpg" alt="The Honoured One">
-      The Honoured One
-    </li>
-  </ul>
+  <div class="anime-section">
+    <h2 class="header">Jujutsu Kaisen</h2>
+    <ul class="anime-list">
+      <li><a href="KC.html" class="active">
+        <img src="suku.png" alt="King of Curses">
+        King of Curses
+      </a></li>
+      <li class="inactive">
+        <img src="gojo.jpg" alt="The Honoured One">
+        The Honoured One
+      </li>
+    </ul>
+  </div>
 
-<h2 class="header ">One piece</h2>
-  <p class="description">Defeat kaido and become the new Emperor of the sea</p>
-<ul class="anime-list">
-    <li><a href="#" class="active">
-      <img src="Luffy.jpg" alt="">
-      Onigashima
-    </a></li>
-  
-  <h2 class="header inactive">Demon Slayer</h2>
-  <p class="description">Prepare to slay demons and uncover dark secrets. Coming soon!</p>
+  <div class="anime-section">
+    <h2 class="header">One Piece</h2>
+    <p class="description">Defeat Kaido and become the new Emperor of the sea</p>
+    <ul class="anime-list">
+      <li><a href="#" class="active">
+        <img src="Luffy.jpg" alt="Onigashima">
+        Onigashima
+      </a></li>
+    </ul>
+  </div>
 
-  <h2 class="header inactive">Chainsaw Man</h2>
-  <p class="description">Chainsaws and devils collide in this brutal adventure. Stay tuned!</p>
+  <div class="anime-section">
+    <h2 class="header inactive">Demon Slayer</h2>
+    <p class="description">Prepare to slay demons and uncover dark secrets. Coming soon!</p>
+  </div>
 
-  <h2 class="header inactive">Attack on Titan</h2>
-  <p class="description">Fight for humanity's survival against monstrous titans. Coming soon!</p>
+  <div class="anime-section">
+    <h2 class="header inactive">Chainsaw Man</h2>
+    <p class="description">Chainsaws and devils collide in this brutal adventure. Stay tuned!</p>
+  </div>
+
+  <div class="anime-section">
+    <h2 class="header inactive">Attack on Titan</h2>
+    <p class="description">Fight for humanity's survival against monstrous titans. Coming soon!</p>
+  </div>
 </div>
 
 <!-- Footer -->
@@ -217,7 +266,7 @@
     if (i < text.length) {
       document.getElementById("typewriter").textContent += text.charAt(i);
       i++;
-      setTimeout(typeWriter, 25); // speed of typing
+      setTimeout(typeWriter, 50); // Adjusted typing speed for better feel
     }
   }
 
@@ -231,5 +280,4 @@
 </script>
 
 </body>
-</html>
- 
+      </html>
