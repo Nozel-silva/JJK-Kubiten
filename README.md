@@ -27,4 +27,4 @@ This project focuses on **game mechanics, animations, collision detection, and r
 - Collision detection
 - Attack and damage system
 - Health system
-- Re
+- Reverse cursed technique 
